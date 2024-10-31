@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Técnico - TECSNAI</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo"><a href="index.html">TECSNAI</a></h1>
+            <nav class="menu">
+                <ul class="nav-links">
+                    <li><a href="#" onclick="mostrarSecao('painel')">Painel</a></li>
+                    <li><a href="#" onclick="mostrarSecao('perfil')">Meu Perfil</a></li>
+                    <li><a href="#" onclick="mostrarSecao('mensagens')">Mensagens</a></li>
+                    <li><a href="#" onclick="mostrarSecao('ajuda')">Ajuda</a></li>
+                    <li><a href="logout.php">Sair</a></li>
+                    <li class="configuracoes-dropdown">
+                        <a href="#">Configurações</a>
+                        <ul class="submenu">
+                            <li><a href="#" onclick="mostrarSecao('mudar-senha')">Mudar Senha</a></li>
+                            <li><a href="#" onclick="mostrarSecao('alterar-email')">Alterar E-mail</a></li>
+                            <li><a href="#" onclick="mostrarSecao('calendario')">Calendário</a></li>
+                            <li><a href="#" onclick="mostrarSecao('excluir-conta')">Excluir Conta</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="painel" class="secao">
+            <h2>Painel</h2>
+            <div class="icone-agendamentos">
+                <button onclick="mostrarSecao('agendamentos-confirmados')">Agendamentos Confirmados</button>
+                <button onclick="mostrarSecao('pedidos-agendamentos')">Pedidos de Agendamentos</button>
+            </div>
+        </section>
+
+        <section id="perfil" class="secao" style="display: none;">
+            <h2>Meu Perfil</h2>
+            <p>Aqui você pode visualizar e editar suas informações pessoais.</p>
+            <!-- Formulário ou informações do perfil -->
+        </section>
+
+        <section id="mensagens" class="secao" style="display: none;">
+            <h2>Mensagens</h2>
+            <div id="mensagens-list"></div>
+        </section>
+
+        <section id="ajuda" class="secao" style="display: none;">
+            <h2>Ajuda</h2>
+            <p>Precisa de ajuda? Consulte nossas informações de suporte ou entre em contato conosco.</p>
+        </section>
+
+        <section id="mudar-senha" class="secao" style="display: none;">
+            <h2>Mudar Senha</h2>
+            <!-- Formulário para mudar a senha -->
+        </section>
+
+        <section id="alterar-email" class="secao" style="display: none;">
+            <h2>Alterar E-mail</h2>
+            <!-- Formulário para alterar o e-mail -->
+        </section>
+
+        <section id="calendario" class="secao" style="display: none;">
+            <h2>Calendário</h2>
+            <p>Visualize seus agendamentos em um calendário interativo.</p>
+        </section>
+
+        <section id="excluir-conta" class="secao" style="display: none;">
+            <h2>Excluir Conta</h2>
+            <p>Cuidado! Esta ação é irreversível.</p>
+            <!-- Botão ou formulário para confirmar exclusão da conta -->
+        </section>
+
+        <section id="agendamentos-confirmados" class="secao" style="display: none;">
+            <h2>Agendamentos Confirmados</h2>
+            <div id="agendamentos-confirmados-list"></div>
+        </section>
+
+        <section id="pedidos-agendamentos" class="secao" style="display: none;">
+            <h2>Pedidos de Agendamentos</h2>
+            <div id="pedidos-agendamentos-list"></div>
+        </section>
+    </main>
+
+    <script>
+        // Função para mostrar apenas a seção selecionada
+        function mostrarSecao(secaoId) {
+            const secoes = document.querySelectorAll('.secao');
+            secoes.forEach(secao => secao.style.display = 'none');
+            document.getElementById(secaoId).style.display = 'block';
+        }
+
+        // Função para carregar mensagens (exemplo de chamada de API)
+        function carregarMensagens() {
+            fetch('/buscar-mensagens.php')
+                .then(response => response.json())
+                .then(mensagens => {
+                    const mensagensList = document.getElementById('mensagens-list');
+                    mensagensList.innerHTML = ''; // Limpa a lista atual
+
+                    mensagens.forEach(mensagem => {
+                        const div = document.createElement('div');
+                        div.innerHTML = `<p><strong>${mensagem.remetente}:</strong> ${mensagem.conteudo} (em: ${mensagem.data_envio})</p>`;
+                        mensagensList.appendChild(div);
+                    });
+                })
+                .catch(error => console.error('Erro ao carregar mensagens:', error));
+        }
+
+        // Função para carregar agendamentos (exemplo de chamada de API)
+        function carregarAgendamentos() {
+            fetch('/buscar-agendamentos.php')
+                .then(response => response.json())
+                .then(agendamentos => {
+                    const confirmadosList = document.getElementById('agendamentos-confirmados-list');
+                    confirmadosList.innerHTML = ''; // Limpa a lista atual
+
+                    agendamentos.confirmados.forEach(agendamento => {
+                        const div = document.createElement('div');
+                        div.innerHTML = `<p><strong>Agendamento Confirmado:</strong> ${agendamento.data_hora} (em: ${agendamento.data_criacao})</p>`;
+                        confirmadosList.appendChild(div);
+                    });
+
+                    const pedidosList = document.getElementById('pedidos-agendamentos-list');
+                    pedidosList.innerHTML = ''; // Limpa a lista atual
+
+                    agendamentos.pedidos.forEach(agendamento => {
+                        const div = document.createElement('div');
+                        div.innerHTML = `<p><strong>Pedido de Agendamento:</strong> ${agendamento.data_hora} (em: ${agendamento.data_criacao})</p>`;
+                        pedidosList.appendChild(div);
+                    });
+                })
+                .catch(error => console.error('Erro ao carregar agendamentos:', error));
+        }
+
+        // Carregar conteúdo inicial quando a página for carregada
+        document.addEventListener('DOMContentLoaded', () => {
+            mostrarSecao('painel'); // Exibir o painel por padrão
+            carregarMensagens();
+            carregarAgendamentos();
+        });
+    </script>
+</body>
+</html>
+
