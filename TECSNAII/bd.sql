@@ -22,10 +22,12 @@ CREATE TABLE tecnicos (
     email VARCHAR(100) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL, -- Armazenada como hash
     foto VARCHAR(255), -- Caminho para a foto de perfil
-    certificado ENUM('sim', 'nao') NOT NULL,
-    documento_certificado VARCHAR(255), -- Caminho para o arquivo do certificado
+    certificado ENUM('sim', 'nao') NOT NULL, -- Indica se possui certificado
+    documento_certificado VARCHAR(255), -- Caminho para o arquivo do certificado (se aplicável)
+    cursando ENUM('sim', 'nao'), -- Indica se o técnico está cursando
+    documento_matricula VARCHAR(255), -- Caminho para o comprovante de matrícula (se aplicável)
     especialidades TEXT NOT NULL, -- Lista de especialidades
     tempo_experiencia INT NOT NULL, -- Anos de experiência
-    apresentacao TEXT,
+    apresentacao TEXT, -- Pequena apresentação do técnico
     data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

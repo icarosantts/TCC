@@ -18,9 +18,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $telefone = $_POST['telefone'];
     $email = $_POST['email'];
     $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT); // Criptografando a senha
+    $certificado = $_POST['certificado'];
+
+    // Verifica se especialidades é um array ou uma string
+    if (is_array($_POST['especialidades'])) {
+        $especialidades = implode(",", $_POST['especialidades']); // Converte especialidades em string separada por vírgulas
+    } else {
+        $especialidades = $_POST['especialidades']; // Atribui diretamente se for uma string
+    }
+
+    $tempo_experiencia = $_POST['tempo-experiencia'];
+    $apresentacao = $_POST['apresentacao'];
+
+    // Upload da foto de perfil
+    $foto = $_FILES['foto']['name'];
+    $foto_tmp = $_FILES['foto']['tmp_name'];
+    $foto_path = "uploads/" . basename($foto);
+    move_uploaded_file($foto_tmp, $foto_path);
+
+    // Upload do documento do certificado (se houver)
+    $documento_certificado = "";
+    if ($certificado == "sim" && isset($_FILES['documento-certificado'])) {
+        $documento_certificado = $_FILES['documento-certificado']['name'];
+        $doc_tmp = $_FILES['documento-certificado']['tmp_name'];
+        $doc_path = "uploads/" . basename($documento_certificado);
+        move_uploaded_file($doc_tmp, $doc_path);
+    }
 
     // Insere os dados no banco
-    $sql = "INSERT INTO clientes (nome, telefone, email, senha) VALUES ('$nome', '$telefone', '$email', '$senha')";
+    $sql = "INSERT INTO tecnicos (nome, telefone, email, senha, foto, certificado, documento_certificado, especialidades, tempo_experiencia, apresentacao) 
+            VALUES ('$nome', '$telefone', '$email', '$senha', '$foto_path', '$certificado', '$doc_path', '$especialidades', '$tempo_experiencia', '$apresentacao')";
 
     if ($conn->query($sql) === TRUE) {
         // Redireciona para a página de login após o cadastro
@@ -37,7 +64,7 @@ $conn->close();
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8"> <!-- Correção aqui -->
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro realizado com sucesso</title>
     <style>
@@ -54,7 +81,7 @@ $conn->close();
         button {
             background-color: white;
             color: #003366;
-            padding: 10px 20px; /* Correção aqui */
+            padding: 10px 20px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
@@ -65,7 +92,7 @@ $conn->close();
         button:hover {
             background-color: #003366;
             color: white;
-        } 
+        }
     </style>
 </head>
 <body>
