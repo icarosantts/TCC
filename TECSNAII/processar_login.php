@@ -1,45 +1,66 @@
 <?php
-// Conectar ao banco de dados
-$servername = "localhost"; // ou o seu servidor de banco de dados
-$username = "root"; // seu nome de usuário do MySQL
-$password = ""; // sua senha do MySQL
-$dbname = "tecnicosDB"; // o nome do seu banco de dados
+session_start();
 
-$conn = new mysqli($servername,$username,$password,$dbname);
+// Configurações do banco de dados
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "tecsnai_db";
 
-// Verifica se houve erro na conexão
+// Cria a conexão
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Verifica a conexão
 if ($conn->connect_error) {
-    die("Conexão falhou: " . $conn->connect_error);
+    die("Falha na conexão: " . $conn->connect_error);
 }
 
-// Obtendo os dados do formulário
-$email = $_POST['email'];
-$senha = $_POST['senha'];
+// Verifica se o formulário foi enviado
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = $_POST['email'];
+    $senha = $_POST['senha'];
 
-// Prepara e executa a consulta
-$sql = "SELECT * FROM usuarios WHERE email = ? AND senha = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("ss", $email, $senha); // "ss" indica que ambos os parâmetros são strings
-$stmt->execute();
-$result = $stmt->get_result();
+    // Primeira tentativa: verifica na tabela de técnicos
+    $sql_tecnico = "SELECT * FROM tecnicos WHERE email = ?";
+    $stmt_tecnico = $conn->prepare($sql_tecnico);
+    $stmt_tecnico->bind_param("s", $email);
+    $stmt_tecnico->execute();
+    $result_tecnico = $stmt_tecnico->get_result();
 
-// Verifica se o usuário foi encontrado
-if ($result->num_rows > 0) {
-    // Inicia a sessão
-    session_start();
-    $_SESSION['email'] = $email; // Armazena o email na sessão
-    echo "<div style='background-color: #003366; color: white; padding: 20px; text-align: center;'>
-            Login realizado com sucesso! Você será redirecionado para a página inicial.
-          </div>";
-    header("refresh:3; index.html"); // Redireciona após 3 segundos
-} else {
-    echo "<div style='background-color: #FF0000; color: white; padding: 20px; text-align: center;'>
-            Login falhou! Email ou senha incorretos. Você será redirecionado para a página de login.
-          </div>";
-    header("refresh:3; login.html"); // Redireciona após 3 segundos
+    if ($result_tecnico->num_rows === 1) {
+        $tecnico = $result_tecnico->fetch_assoc();
+        if (password_verify($senha, $tecnico['senha'])) {
+            // Autenticação bem-sucedida como técnico
+            $_SESSION['usuario_id'] = $tecnico['id_tecnico'];
+            $_SESSION['usuario_nome'] = $tecnico['nome'];
+            $_SESSION['usuario_tipo'] = 'tecnico';
+            header("Location: pagina-tecnico.html");
+            exit();
+        }
+    } else {
+        // Segunda tentativa: verifica na tabela de clientes
+        $sql_cliente = "SELECT * FROM clientes WHERE email = ?";
+        $stmt_cliente = $conn->prepare($sql_cliente);
+        $stmt_cliente->bind_param("s", $email);
+        $stmt_cliente->execute();
+        $result_cliente = $stmt_cliente->get_result();
+
+        if ($result_cliente->num_rows === 1) {
+            $cliente = $result_cliente->fetch_assoc();
+            if (password_verify($senha, $cliente['senha'])) {
+                // Autenticação bem-sucedida como cliente
+                $_SESSION['usuario_id'] = $cliente['id_cliente'];
+                $_SESSION['usuario_nome'] = $cliente['nome'];
+                $_SESSION['usuario_tipo'] = 'cliente';
+                header("Location: pagina-cliente.html");
+                exit();
+            }
+        }
+    }
+
+    // Se o login falhar, exibe uma mensagem de erro
+    echo "Email ou senha incorretos. Tente novamente.";
 }
 
-// Fecha a conexão
-$stmt->close();
 $conn->close();
 ?>
