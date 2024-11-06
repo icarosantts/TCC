@@ -177,6 +177,26 @@ button:hover, .google-button:hover {
     display: block;
 }
 
+.perfil-container {
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px;
+}
+
+.foto-perfil {
+    width: 100px; /* ou outro tamanho adequado */
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+#editar-valor-container {
+    margin-top: 16px;
+}
+
 /* Estilo do rodapé */
 footer {
     background-color: #007bff;

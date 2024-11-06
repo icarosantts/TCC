@@ -15,7 +15,6 @@ if ($conn->connect_error) {
     die("Falha na conexão: " . $conn->connect_error);
 }
 
-// Verifica se o formulário foi enviado
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $senha = $_POST['senha'];
@@ -34,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['usuario_id'] = $tecnico['id_tecnico'];
             $_SESSION['usuario_nome'] = $tecnico['nome'];
             $_SESSION['usuario_tipo'] = 'tecnico';
-            header("Location: pagina-tecnico.html");
+            header("Location: pagina-tecnico.php");
             exit();
         }
     } else {
@@ -52,14 +51,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['usuario_id'] = $cliente['id_cliente'];
                 $_SESSION['usuario_nome'] = $cliente['nome'];
                 $_SESSION['usuario_tipo'] = 'cliente';
-                header("Location: pagina-cliente.html");
+                header("Location: pagina-cliente.php");
                 exit();
             }
         }
     }
 
-    // Se o login falhar, exibe uma mensagem de erro
-    echo "Email ou senha incorretos. Tente novamente.";
+    // Se o login falhar, armazena a mensagem de erro na sessão e redireciona para a página de login
+    $_SESSION['erro_login'] = "Email ou senha incorretos. Tente novamente.";
+    header("Location: login.html"); // Redireciona para a tela de login
+    exit();
 }
 
 $conn->close();
