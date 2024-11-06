@@ -1,28 +1,29 @@
 <?php
+// buscar-perfil-tecnico.php
+
 session_start();
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "tecsnai_db";
+include 'conexao.php'; // Seu arquivo de conexão com o banco de dados
 
-// Cria a conexão
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Verifica a conexão
-if ($conn->connect_error) {
-    die("Falha na conexão: " . $conn->connect_error);
+// Verifica se o usuário está logado
+if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'tecnico') {
+    http_response_code(401); // Não autorizado
+    echo json_encode(['error' => 'Usuário não autorizado']);
+    exit();
 }
 
-$id_tecnico = $_SESSION['id_tecnico']; // ID do técnico logado
-$query = "SELECT nome, area_tecnica, descricao, valor_servico, foto_perfil FROM tecnicos WHERE id = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param('i', $id_tecnico);
-$stmt->execute();
-$result = $stmt->get_result();
+// Recupera o ID do técnico logado
+$usuario_id = $_SESSION['usuario_id'];
 
-if ($result->num_rows > 0) {
-    echo json_encode($result->fetch_assoc());
+// Recupera os dados do perfil
+$query = "SELECT nome, descricao, foto FROM tecnicos WHERE id = ?";
+$stmt = $pdo->prepare($query);
+$stmt->execute([$usuario_id]);
+$perfil = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if ($perfil) {
+    echo json_encode($perfil); // Retorna os dados do perfil em formato JSON
 } else {
-    echo json_encode([]);
+    http_response_code(404);
+    echo json_encode(['error' => 'Perfil não encontrado']);
 }
 ?>

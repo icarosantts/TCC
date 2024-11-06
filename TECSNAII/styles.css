@@ -177,24 +177,106 @@ button:hover, .google-button:hover {
     display: block;
 }
 
-.perfil-container {
-    text-align: center;
-    border: 1px solid #ddd;
+/* Estilização da seção de perfil */
+#perfil {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f7f7f7;
     border-radius: 8px;
-    padding: 16px;
-    margin: 16px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.foto-perfil {
-    width: 100px; /* ou outro tamanho adequado */
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 10px;
+/* Estilização da foto de perfil */
+#foto-perfil {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%; /* Torna a imagem circular */
+    object-fit: cover; /* Ajusta a imagem ao círculo */
+    border: 3px solid #ccc;
+    margin-bottom: 20px;
 }
 
-#editar-valor-container {
-    margin-top: 16px;
+/* Estilização dos dados do perfil */
+#perfil-info {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+#perfil-info div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+
+/* Estilização dos textos */
+#perfil-info p {
+    margin: 0;
+    font-size: 16px;
+}
+
+#perfil-info strong {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Inputs de edição (inicialmente ocultos) */
+#perfil-info input[type="text"],
+#perfil-info input[type="number"],
+#perfil-info textarea {
+    display: none;
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* Classe para botões de edição compactos */
+.btn-editar {
+    padding: 4px 8px;
+    font-size: 12px;
+    color: white;
+    background-color: #181e74;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: background-color 0.3s;
+}
+
+.btn-editar:hover {
+    background-color: #090750;
+}
+
+/* Botão de salvar e cancelar */
+#perfil-info button.salvar,
+#perfil-info button.cancelar {
+    padding: 8px 12px;
+    font-size: 14px;
+    margin-top: 15px;
+}
+
+#perfil-info button.salvar {
+    background-color: #007bff;
+}
+
+#perfil-info button.salvar:hover {
+    background-color: #0056b3;
+}
+
+#perfil-info button.cancelar {
+    background-color: #ccc;
+}
+
+#perfil-info button.cancelar:hover {
+    background-color: #999;
 }
 
 /* Estilo do rodapé */

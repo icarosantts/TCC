@@ -45,7 +45,7 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'tecnico') 
     </header>
 
     <main>
-        <section id="painel" class="secao">
+        <section id="painel" class="secao" style="display: none;">
             <h2>Painel</h2>
             <div class="icone-agendamentos">
                 <button onclick="mostrarSecao('agendamentos-confirmados')">Agendamentos Confirmados</button>
@@ -53,24 +53,45 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'tecnico') 
             </div>
         </section>
 
-        <section id="perfil" class="secao" style="display: none;">
+        <section id="perfil" class="secao">
             <h2>Meu Perfil</h2>
             <div id="perfil-info">
-                <img id="foto-perfil" src="default-profile.png" alt="Foto de Perfil" />
-                <p><strong>Nome:</strong> <span id="nome-tecnico"></span></p>
-                <p><strong>Área Técnica:</strong> <span id="area-tecnica"></span></p>
-                <p><strong>Descrição:</strong> <span id="descricao-tecnico"></span></p>
-                <p><strong>Valor do Serviço:</strong> R$ <span id="valor-servico"></span></p>
-                <button onclick="mostrarFormValor()">Editar Valor do Serviço</button>
+            <div>
+                <p><strong>Foto de Perfil:</strong></p>
+                <img id="foto-perfil" src="default-profile.png" alt="Foto de Perfil" style="width: 150px; height: 150px; object-fit: cover;">
+                <input type="file" id="upload-foto" style="display: none;" accept="image/*">
+                <button class="btn-editar" onclick="document.getElementById('upload-foto').click()">Alterar Foto</button>
             </div>
-        
-            <div id="form-editar-valor" style="display: none;">
-                <h3>Adicionar/Editar Valor do Serviço</h3>
-                <input type="number" id="novo-valor" placeholder="Novo Valor" />
-                <button onclick="atualizarValor()">Salvar</button>
-                <button onclick="cancelarEdicao()">Cancelar</button>
+
+                <div>
+                    <p><strong>Nome:</strong> <span id="nome-tecnico"></span></p>
+                    <button class="btn-editar" onclick="editarCampo('nome-tecnico')">Editar</button>
+                    <input type="text" id="editar-nome" style="display: none;" placeholder="Novo Nome">
+                </div>
+
+
+                <div>
+                    <p><strong>Área Técnica:</strong> <span id="area-tecnica"></span></p>
+                    <button class="btn-editar" onclick="editarCampo('area-tecnica')">Editar</button>
+                    <input type="text" id="editar-area" style="display: none;" placeholder="Nova Área Técnica">
+                </div>
+
+                <div>
+                    <p><strong>Descrição:</strong> <span id="descricao-tecnico"></span></p>
+                    <button class="btn-editar" onclick="editarCampo('descricao-tecnico')">Editar</button>
+                    <textarea id="editar-descricao" style="display: none;" placeholder="Nova Descrição"></textarea>
+                </div>
+
+                <div>
+                    <p><strong>Valor do Serviço:</strong> R$ <span id="valor-servico"></span></p>
+                    <button class="btn-editar" onclick="editarCampo('valor-servico')">Editar</button>
+                    <input type="number" id="editar-valor" style="display: none;" placeholder="Novo Valor">
+                </div>
+
+                <button class="btn-editar" onclick="salvarAlteracoes()">Salvar Alterações</button>
+                <button class="btn-editar" onclick="cancelarEdicoes()">Cancelar</button>
             </div>
-        </section>                
+        </section>
 
         <section id="mensagens" class="secao" style="display: none;">
             <h2>Mensagens</h2>
@@ -115,115 +136,131 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'tecnico') 
     </main>
 
     <script>
-        // Função para mostrar apenas a seção selecionada
         function mostrarSecao(secaoId) {
             const secoes = document.querySelectorAll('.secao');
             secoes.forEach(secao => secao.style.display = 'none');
             document.getElementById(secaoId).style.display = 'block';
         }
 
-        // Função para carregar mensagens (exemplo de chamada de API)
-        function carregarMensagens() {
-            fetch('/buscar-mensagens.php')
-                .then(response => response.json())
-                .then(mensagens => {
-                    const mensagensList = document.getElementById('mensagens-list');
-                    mensagensList.innerHTML = ''; // Limpa a lista atual
-
-                    mensagens.forEach(mensagem => {
-                        const div = document.createElement('div');
-                        div.innerHTML = `<p><strong>${mensagem.remetente}:</strong> ${mensagem.conteudo} (em: ${mensagem.data_envio})</p>`;
-                        mensagensList.appendChild(div);
-                    });
-                })
-                .catch(error => console.error('Erro ao carregar mensagens:', error));
-        }
-
-        // Função para carregar agendamentos (exemplo de chamada de API)
-        function carregarAgendamentos() {
-            fetch('/buscar-agendamentos.php')
-                .then(response => response.json())
-                .then(agendamentos => {
-                    const confirmadosList = document.getElementById('agendamentos-confirmados-list');
-                    confirmadosList.innerHTML = ''; // Limpa a lista atual
-
-                    agendamentos.confirmados.forEach(agendamento => {
-                        const div = document.createElement('div');
-                        div.innerHTML = `<p><strong>Agendamento Confirmado:</strong> ${agendamento.data_hora} (em: ${agendamento.data_criacao})</p>`;
-                        confirmadosList.appendChild(div);
-                    });
-
-                    const pedidosList = document.getElementById('pedidos-agendamentos-list');
-                    pedidosList.innerHTML = ''; // Limpa a lista atual
-
-                    agendamentos.pedidos.forEach(agendamento => {
-                        const div = document.createElement('div');
-                        div.innerHTML = `<p><strong>Pedido de Agendamento:</strong> ${agendamento.data_hora} (em: ${agendamento.data_criacao})</p>`;
-                        pedidosList.appendChild(div);
-                    });
-                })
-                .catch(error => console.error('Erro ao carregar agendamentos:', error));
-        }
-
-        // Carregar conteúdo inicial quando a página for carregada
         document.addEventListener('DOMContentLoaded', () => {
-            mostrarSecao('painel'); // Exibir o painel por padrão
+            mostrarSecao('perfil');
+            carregarPerfil();
             carregarMensagens();
             carregarAgendamentos();
         });
 
-        // Função para carregar o perfil do técnico
-function carregarPerfil() {
-    fetch('/buscar-perfil-tecnico.php') // URL do seu script PHP que retorna os dados do perfil
+        function carregarPerfil() {
+            fetch('/buscar-perfil-tecnico.php')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('nome-tecnico').textContent = data.nome;
+                    document.getElementById('area-tecnica').textContent = data.area_tecnica;
+                    document.getElementById('descricao-tecnico').textContent = data.descricao;
+                    document.getElementById('valor-servico').textContent = data.valor_servico || "Não definido";
+                    document.getElementById('foto-perfil').src = data.foto_perfil || 'default-profile.png';
+                })
+                .catch(error => console.error('Erro ao carregar perfil:', error));
+        }
+
+        // Função para exibir o campo de edição
+        function editarCampo(campo) {
+            const campoEdicao = document.getElementById('editar-' + campo);
+            const campoExibicao = document.getElementById(campo);
+
+            // Exibe o campo de edição e esconde o valor atual
+            campoExibicao.style.display = 'none';
+            campoEdicao.style.display = 'inline-block';
+            campoEdicao.value = campoExibicao.textContent.trim(); // Coloca o valor atual no campo de edição
+        }
+
+
+        // Função para salvar as alterações
+        function salvarAlteracoes() {
+            const nome = document.getElementById('editar-nome').value;
+            const descricao = document.getElementById('editar-descricao').value;
+
+            const dados = {
+                nome: nome,
+                descricao: descricao
+            };
+
+            fetch('/atualizar-perfil-tecnico.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(dados),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Atualiza os dados na página
+                    document.getElementById('nome-tecnico').textContent = nome;
+                    document.getElementById('descricao-tecnico').textContent = descricao;
+                    // Esconde o campo de edição
+                    document.getElementById('editar-nome').style.display = 'none';
+                    document.getElementById('editar-descricao').style.display = 'none';
+                } else {
+                    alert('Erro ao salvar alterações');
+                }
+            })
+            .catch(error => console.error('Erro ao salvar alterações:', error));
+        }
+
+
+        function cancelarEdicoes() {
+            document.querySelectorAll('[id^="editar-"]').forEach(input => input.style.display = 'none');
+            carregarPerfil();
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+    mostrarSecao('perfil'); // Exibir a seção do perfil por padrão
+    carregarPerfil(); // Carregar o perfil do técnico
+});
+
+        function carregarPerfil() {
+            fetch('/buscar-perfil-tecnico.php') // Chama o script PHP para buscar os dados do perfil
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Erro ao carregar perfil: ' + data.error);
+                        return;
+                    }
+                    // Preencher os dados do perfil
+                    document.getElementById('nome-tecnico').textContent = data.nome;
+                    document.getElementById('descricao-tecnico').textContent = data.descricao;
+                    document.getElementById('foto-perfil').src = data.foto || 'default-profile.png';
+                })
+                .catch(error => console.error('Erro ao carregar perfil:', error));
+        }
+
+        document.getElementById('upload-foto').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    
+    if (file) {
+        const formData = new FormData();
+        formData.append('foto', file);
+        
+        // Enviar a imagem para o servidor
+        fetch('/atualizar-foto-perfil.php', {
+            method: 'POST',
+            body: formData
+        })
         .then(response => response.json())
         .then(data => {
-            document.getElementById('nome-tecnico').textContent = data.nome;
-            document.getElementById('area-tecnica').textContent = data.area_tecnica;
-            document.getElementById('descricao-tecnico').textContent = data.descricao;
-            document.getElementById('valor-servico').textContent = data.valor_servico || "Não definido";
-            document.getElementById('foto-perfil').src = data.foto_perfil || 'default-profile.png'; // Default caso não tenha foto
+            if (data.success) {
+                // Atualiza a imagem de perfil na página
+                document.getElementById('foto-perfil').src = data.foto_url;
+            } else {
+                alert('Erro ao atualizar a foto de perfil');
+            }
         })
-        .catch(error => console.error('Erro ao carregar perfil:', error));
-}
+        .catch(error => {
+            console.error('Erro ao enviar foto:', error);
+        });
+    }
+});
 
-// Função para mostrar o formulário de edição de valor
-function mostrarFormValor() {
-    document.getElementById('form-editar-valor').style.display = 'block';
-}
-
-// Função para atualizar o valor do serviço
-function atualizarValor() {
-    const novoValor = document.getElementById('novo-valor').value;
-
-    fetch('/atualizar-valor-servico.php', { // URL do seu script PHP para atualizar o valor
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ valor_servico: novoValor }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            document.getElementById('valor-servico').textContent = novoValor; // Atualiza o valor exibido
-            cancelarEdicao();
-        } else {
-            alert('Erro ao atualizar o valor.');
-        }
-    })
-    .catch(error => console.error('Erro ao atualizar valor:', error));
-}
-
-// Função para cancelar a edição do valor
-function cancelarEdicao() {
-    document.getElementById('form-editar-valor').style.display = 'none';
-    document.getElementById('novo-valor').value = ''; // Limpa o campo
-}
-
-// Carregar perfil ao iniciar
-document.addEventListener('DOMContentLoaded', carregarPerfil);
 
     </script>
 </body>
 </html>
-
