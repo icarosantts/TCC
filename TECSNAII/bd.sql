@@ -27,8 +27,8 @@ CREATE TABLE tecnicos (
     cursando ENUM('sim', 'nao'), -- Indica se o técnico está cursando
     documento_matricula VARCHAR(255), -- Caminho para o comprovante de matrícula (se aplicável)
     especialidades TEXT NOT NULL, -- Lista de especialidades
-    tempo_experiencia INT NOT NULL, -- Anos de experiência
-    apresentacao TEXT, -- Pequena apresentação do técnico
+    valor_servico DECIMAL(10,2),
+    descricao_tecnico TEXT, -- Pequena apresentação do técnico
     data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $especialidades = $_POST['especialidades']; // Atribui diretamente se for uma string
     }
 
-    $tempo_experiencia = $_POST['tempo-experiencia'];
+    $valor_servico = $_POST['valor_servico'];
     $apresentacao = $_POST['apresentacao'];
 
     // Upload da foto de perfil
@@ -46,8 +46,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Insere os dados no banco
-    $sql = "INSERT INTO tecnicos (nome, telefone, email, senha, foto, certificado, documento_certificado, especialidades, tempo_experiencia, apresentacao) 
-            VALUES ('$nome', '$telefone', '$email', '$senha', '$foto_path', '$certificado', '$doc_path', '$especialidades', '$tempo_experiencia', '$apresentacao')";
+    $sql = "INSERT INTO tecnicos (nome, telefone, email, senha, foto, certificado, documento_certificado, especialidades, valor_servico, descricao_tecnico) 
+            VALUES ('$nome', '$telefone', '$email', '$senha', '$foto_path', '$certificado', '$doc_path', '$especialidades', '$valor_servico', '$descricao_tecnico')";
 
     if ($conn->query($sql) === TRUE) {
         // Redireciona para a página de login após o cadastro

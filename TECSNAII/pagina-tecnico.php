@@ -58,7 +58,7 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'tecnico') 
             <div id="perfil-info">
             <div>
                 <p><strong>Foto de Perfil:</strong></p>
-                <img id="foto-perfil" src="default-profile.png" alt="Foto de Perfil" style="width: 150px; height: 150px; object-fit: cover;">
+                <img id="foto-perfil" src="https://picsum.photos/200/300" alt="">
                 <input type="file" id="upload-foto" style="display: none;" accept="image/*">
                 <button class="btn-editar" onclick="document.getElementById('upload-foto').click()">Alterar Foto</button>
             </div>
