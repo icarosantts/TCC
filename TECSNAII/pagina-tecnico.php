@@ -8,7 +8,29 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'tecnico') 
     exit();
 }
 
-// Caso esteja logado e seja técnico, o conteúdo da página do técnico é exibido
+// Conexão com o banco de dados
+require_once 'conexao.php';
+
+// Obtém o ID do técnico da sessão
+$tecnico_id = $_SESSION['usuario_id'];
+
+// Busca os dados do técnico no banco de dados
+$query = "SELECT * FROM tecnicos WHERE id_tecnico = ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("i", $tecnico_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+// Verifica se encontrou o técnico
+if ($result->num_rows > 0) {
+    $tecnico = $result->fetch_assoc();
+} else {
+    echo "Erro: Técnico não encontrado.";
+    exit();
+}
+
+$stmt->close();
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -54,43 +76,14 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'tecnico') 
         </section>
 
         <section id="perfil" class="secao">
-            <h2>Meu Perfil</h2>
-            <div id="perfil-info">
-            <div>
-                <p><strong>Foto de Perfil:</strong></p>
-                <img id="foto-perfil" src="https://picsum.photos/200/300" alt="">
-                <input type="file" id="upload-foto" style="display: none;" accept="image/*">
-                <button class="btn-editar" onclick="document.getElementById('upload-foto').click()">Alterar Foto</button>
-            </div>
-
-                <div>
-                    <p><strong>Nome:</strong> <span id="nome-tecnico"></span></p>
-                    <button class="btn-editar" onclick="editarCampo('nome-tecnico')">Editar</button>
-                    <input type="text" id="editar-nome" style="display: none;" placeholder="Novo Nome">
-                </div>
-
-
-                <div>
-                    <p><strong>Área Técnica:</strong> <span id="area-tecnica"></span></p>
-                    <button class="btn-editar" onclick="editarCampo('area-tecnica')">Editar</button>
-                    <input type="text" id="editar-area" style="display: none;" placeholder="Nova Área Técnica">
-                </div>
-
-                <div>
-                    <p><strong>Descrição:</strong> <span id="descricao-tecnico"></span></p>
-                    <button class="btn-editar" onclick="editarCampo('descricao-tecnico')">Editar</button>
-                    <textarea id="editar-descricao" style="display: none;" placeholder="Nova Descrição"></textarea>
-                </div>
-
-                <div>
-                    <p><strong>Valor do Serviço:</strong> R$ <span id="valor-servico"></span></p>
-                    <button class="btn-editar" onclick="editarCampo('valor-servico')">Editar</button>
-                    <input type="number" id="editar-valor" style="display: none;" placeholder="Novo Valor">
-                </div>
-
-                <button class="btn-editar" onclick="salvarAlteracoes()">Salvar Alterações</button>
-                <button class="btn-editar" onclick="cancelarEdicoes()">Cancelar</button>
-            </div>
+        <h2>Meu perfil</h2> 
+        <div id="perfil-info"> 
+            <img id="perfil-foto" src="<?php echo $tecnico['foto'] ?? 'default-profile.png'; ?>" alt="Foto do Técnico">
+            <h2 id="nome"><?php echo $tecnico['nome']; ?>
+            </h2> <p><strong>Área de Ação:</strong> <?php echo $tecnico['especialidades']; ?></p> 
+            <p><strong>Descrição:</strong> <?php echo $tecnico['descricao_tecnico']; ?></p>
+            <p><strong>Valores de Serviço:</strong> <?php echo $tecnico['valor_servico']; ?></p> 
+        </div> 
         </section>
 
         <section id="mensagens" class="secao" style="display: none;">

@@ -1,6 +1,7 @@
 <?php
-session_start(); // Inicia a sessão para acessar os dados do usuário logado
+session_start(); // Inicia a sessão
 
+// Dados de conexão
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -14,19 +15,32 @@ if ($conn->connect_error) {
     die("Falha na conexão: " . $conn->connect_error);
 }
 
-// Supondo que o e-mail do técnico está armazenado na sessão após o login
-$email_tecnico = $_SESSION['email']; // Altere conforme sua lógica de autenticação
+// Verifica se o técnico está logado
+if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'tecnico') {
+    header("Location: login.php");
+    exit;
+}
 
-$sql = "SELECT * FROM tecnicos WHERE email = ?";
+$tecnico_id = $_SESSION['usuario_id'];
+
+// Corrige a consulta SQL usando a variável correta
+$sql = "SELECT nome, foto, especialidades, valor_servico, descricao_tecnico FROM tecnicos WHERE id_tecnico = ?";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $email_tecnico);
+$stmt->bind_param("i", $tecnico_id);
 $stmt->execute();
-$resultado = $stmt->get_result();
+$result = $stmt->get_result();
 
-if ($resultado->num_rows > 0) {
-    $tecnico = $resultado->fetch_assoc();
+if ($result->num_rows > 0) {
+    // Recupera os dados do técnico
+    $row = $result->fetch_assoc();
+    $nome = $row['nome'];
+    $foto = !empty($row['foto']) ? $row['foto'] : 'default-profile.png'; // Usa uma imagem padrão se não houver foto
+    $especialidades = $row['especialidades'];
+    $valor_servico = $row['valor_servico'];
+    $descricao_tecnico = $row['descricao_tecnico'];
 } else {
-    echo "Nenhum técnico encontrado.";
+    echo "Nenhum técnico encontrado!";
+    exit;
 }
 
 $stmt->close();

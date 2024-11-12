@@ -177,53 +177,44 @@ button:hover, .google-button:hover {
     display: block;
 }
 
-/* Estilo do perfil */
-#perfil {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    max-width: 600px;
-    margin: 0 auto;
+.perfil-container {
+    text-align: center;
+    background-color: #fff;
     padding: 20px;
-    background-color: #f7f7f7;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-#foto-perfil {
-    width: 100px;
-    height: 100px;
-    border-radius: 100%;
-    object-fit: contain;
-    border: 3px solid #ccc;
-    margin-bottom: 20px;
-}
-
-#perfil-info {
-    display: flex;
-    flex-direction: column;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
     width: 100%;
 }
 
-#perfil-info div {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin: 10px 0;
+.perfil-container img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 20px;
 }
 
-#perfil-info p {
-    margin: 0;
+.perfil-container h2 {
+    color: #003366;
+    margin-bottom: 10px;
+}
+
+.perfil-container p {
     font-size: 16px;
+    margin: 5px 0;
 }
 
-#perfil-info strong {
-    font-weight: bold;
-    color: #333;
+.perfil-container .especialidades,
+.perfil-container .descricao {
+    text-align: left;
+    margin-top: 10px;
 }
 
-#perfil-info button {
-    margin-top: 20px;
+.valor-servico {
+    font-size: 18px;
+    color: #27ae60;
+    margin-top: 10px;
 }
 
 /* Estilo do rodapé */
