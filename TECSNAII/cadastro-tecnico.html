@@ -24,7 +24,7 @@
         <section>
             <h2>Cadastro de Técnico</h2>
             <p>Preencha os dados abaixo para se cadastrar como técnico.</p>
-            <form id="cadastro-tecnico" action="cadastro-tecnico.php" method="POST">
+            <form id="cadastro-tecnico" action="cadastro-tecnico.php" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="nome">Nome:</label>
                     <input type="text" id="nome" name="nome" required>
@@ -41,10 +41,6 @@
                     <label for="senha">Senha:</label>
                     <input type="password" id="senha" name="senha" required>
                 </div>
-                <div class="form-group">
-                    <label for="foto">Foto de Perfil:</label>
-                    <input type="file" id="foto" name="foto" accept="image/*" required>
-                </div>
 
                 <div class="form-group">
                     <label>Possui Certificado Técnico?</label>
@@ -53,7 +49,7 @@
                 </div>
 
                 <div class="form-group certificado-documento" style="display: none;">
-                    <label for="documento-certificado">Documento do Certificado:</label>
+                    <label for="documento-certificado">Documento do Certificado (PDF, DOC, JPEG, PNG - Máx: 2MB):</label>
                     <input type="file" id="documento-certificado" name="documento-certificado" accept=".pdf, .doc, .docx, .jpg, .jpeg, .png">
                 </div>
 
@@ -64,7 +60,7 @@
                 </div>
 
                 <div class="form-group documento-matricula" style="display: none;">
-                    <label for="documento-matricula">Atestado de Matrícula:</label>
+                    <label for="documento-matricula">Atestado de Matrícula (PDF, DOC, JPEG, PNG - Máx: 2MB):</label>
                     <input type="file" id="documento-matricula" name="documento-matricula" accept=".pdf, .doc, .docx, .jpg, .jpeg, .png">
                 </div>
 
@@ -115,7 +111,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="valor_servico">Valor do Serviço</label>
+                    <label for="valor_servico">Valor do Serviço:</label>
                     <input type="number" id="valor_servico" name="valor_servico" required>
                 </div>
 
@@ -134,14 +130,13 @@
     </footer>
 
     <script>
-        // Referências dos elementos do formulário
         const certificadoRadios = document.querySelectorAll('input[name="certificado"]');
         const cursandoRadiosContainer = document.querySelector('.cursando');
         const cursandoRadios = document.querySelectorAll('input[name="cursando"]');
         const certificadoDocumento = document.querySelector('.certificado-documento');
         const documentoMatricula = document.querySelector('.documento-matricula');
 
-        // Verifica o status do certificado
+        // Exibe campos com base na seleção de certificado
         certificadoRadios.forEach(radio => {
             radio.addEventListener('change', function() {
                 if (this.value === 'sim') {
@@ -155,14 +150,14 @@
             });
         });
 
-        // Verifica se está cursando
+        // Exibe campos com base na seleção de "cursando"
         cursandoRadios.forEach(radio => {
             radio.addEventListener('change', function() {
                 if (this.value === 'sim') {
                     documentoMatricula.style.display = 'block';
                 } else {
                     documentoMatricula.style.display = 'none';
-                    alert("Para prosseguir, você deve estar cursando e anexar um comprovante de matrícula.");
+                    alert("Para prosseguir, é necessário possuir um certificado ou estar cursando com um comprovante de matrícula.");
                 }
             });
         });
@@ -175,6 +170,15 @@
             if (possuiCertificado === 'nao' && (!estaCursando || estaCursando.value === 'nao')) {
                 e.preventDefault();
                 alert("Não é possível concluir o cadastro sem certificado ou comprovante de matrícula.");
+            }
+        });
+
+        // Limite de seleções na especialidade
+        document.getElementById('especialidades').addEventListener('change', function() {
+            const selectedOptions = [...this.selectedOptions];
+            if (selectedOptions.length > 3) { // Limite de 3 especialidades
+                alert('Você pode escolher até 3 especialidades.');
+                selectedOptions[selectedOptions.length - 1].selected = false;
             }
         });
     </script>

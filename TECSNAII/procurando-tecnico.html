@@ -34,7 +34,6 @@
                         <option value="manutencao-automotiva">Técnico em Manutenção Automotiva</option>
                         <option value="edificacoes">Técnico em Edificações</option>
                         <option value="design-calcados">Técnico em Design de Calçados</option>
-                        <option value="ensino-medio">Ensino Médio</option>
                         <option value="eletroeletronica">Técnico em Eletroeletrônica</option>
                         <option value="eletronica">Técnico em Eletrônica</option>
                         <option value="eletrotecnica">Técnico em Eletrotécnica</option>
@@ -104,6 +103,17 @@
         <p>&copy; 2024 TECSNAI. Todos os direitos reservados.</p>
     </footer>
 
+
+    <!-- Card de Login -->
+    <div id="login-card">
+        <div class="card">
+            <p>Você precisa estar logado para realizar esta ação. Faça login ou crie uma conta.</p>
+            <button onclick="window.location.href='login.html'">Login</button>
+            <button onclick="window.location.href='cadastro.html'">Cadastrar</button>
+            <button class="cancel-btn" onclick="closeLoginCard()">Cancelar</button>
+        </div>
+    </div>
+
     <script>
         document.getElementById('quiz-form').addEventListener('submit', function(e) {
             // Captura os dados do formulário
@@ -120,9 +130,41 @@
             localStorage.setItem('valorMinimo', valorMinimo);
             localStorage.setItem('valorMaximo', valorMaximo);
 
-            // Após salvar, permite que o formulário seja enviado
-            // A execução do evento padrão será realizada somente após salvar
+            // Se não estiver logado, impede o envio do formulário e exibe um prompt
+            if (!isLoggedIn()) {
+                e.preventDefault(); // Impede o envio do formulário
+                showLoginCard();
+            }
         });
+
+        // Verifica se o usuário está logado
+        function isLoggedIn() {
+            return localStorage.getItem('userLoggedIn') === 'true';
+        }
+
+        // Exibe o card de login
+        function showLoginCard() {
+            document.getElementById('login-card').style.display = 'flex';
+        }
+
+        // Fecha o card de login
+        function closeLoginCard() {
+            document.getElementById('login-card').style.display = 'none';
+        }
+
+        // Função para redirecionar para login ou cadastro
+        function checkLogin(action, tecnicoId) {
+            if (!isLoggedIn()) {
+                showLoginCard();
+            } else {
+                if (action === 'agendar') {
+                    window.location.href = `agendar-servico.php?tecnicoId=${tecnicoId}`;
+                } else if (action === 'mensagem') {
+                    window.location.href = `enviar-mensagem.php?tecnicoId=${tecnicoId}`;
+                }
+            }
+        }
     </script>
 </body>
 </html>
+    

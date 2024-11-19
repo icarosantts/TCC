@@ -76,15 +76,25 @@ $conn->close();
         </section>
 
         <section id="perfil" class="secao">
-        <h2>Meu perfil</h2> 
-        <div id="perfil-info"> 
-            <img id="perfil-foto" src="<?php echo $tecnico['foto'] ?? 'default-profile.png'; ?>" alt="Foto do Técnico">
-            <h2 id="nome"><?php echo $tecnico['nome']; ?>
-            </h2> <p><strong>Área de Ação:</strong> <?php echo $tecnico['especialidades']; ?></p> 
-            <p><strong>Descrição:</strong> <?php echo $tecnico['descricao_tecnico']; ?></p>
-            <p><strong>Valores de Serviço:</strong> <?php echo $tecnico['valor_servico']; ?></p> 
-        </div> 
+            <h2>Meu perfil</h2>
+            <div id="perfil-info">
+                <!-- Exibe a foto do técnico -->
+                <img src="<?php echo $foto_para_exibir; ?>" alt="Foto do Técnico" />
+                
+                <!-- Botão de upload de nova foto -->
+                <form id="upload-foto-form" enctype="multipart/form-data">
+                    <input type="file" id="upload-foto" name="foto" accept="image/*">
+                    <button type="button" onclick="enviarFoto()">Atualizar Foto</button>
+                </form>
+
+                <!-- Exibe o nome e a descrição -->
+                <h2 id="nome-tecnico"><?php echo htmlspecialchars($tecnico['nome']); ?></h2>
+                <p><strong>Área de Ação:</strong> <?php echo htmlspecialchars($tecnico['especialidades']); ?></p>
+                <p><strong>Descrição:</strong> <?php echo htmlspecialchars($tecnico['descricao_tecnico']); ?></p>
+                <p><strong>Valores de Serviço:</strong> <?php echo htmlspecialchars($tecnico['valor_servico']); ?></p>
+            </div>
         </section>
+
 
         <section id="mensagens" class="secao" style="display: none;">
             <h2>Mensagens</h2>
@@ -129,6 +139,83 @@ $conn->close();
     </main>
 
     <script>
+
+        document.getElementById('form-foto').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+
+            fetch('atualizar-foto-perfil.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Atualiza a imagem de perfil
+                    document.getElementById('perfil-foto').src = data.foto_url;
+                } else {
+                    alert('Erro ao atualizar a foto de perfil: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao enviar foto:', error);
+            });
+        });
+
+        // JavaScript para exibir nova foto após upload
+        document.getElementById('upload-foto').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            
+            if (file) {
+                const formData = new FormData();
+                formData.append('foto', file);
+                
+                // Envia a imagem para o servidor
+                fetch('/atualizar-foto-perfil.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Atualiza a imagem de perfil na página
+                        document.getElementById('perfil-foto').src = data.foto_url;
+                    } else {
+                        alert('Erro ao atualizar a foto de perfil');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao enviar foto:', error);
+                });
+            }
+        });
+
+        function enviarFoto() {
+            const fotoInput = document.getElementById('upload-foto');
+            const file = fotoInput.files[0];
+
+            if (file) {
+                const formData = new FormData();
+                formData.append('foto', file);
+
+                fetch('/atualizar-foto-perfil.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('foto-perfil').src = data.foto_url;
+                    } else {
+                        alert('Erro ao atualizar a foto de perfil');
+                    }
+                })
+                .catch(error => console.error('Erro ao enviar foto:', error));
+            } else {
+                alert('Por favor, selecione uma foto.');
+            }
+        }
+
         function mostrarSecao(secaoId) {
             const secoes = document.querySelectorAll('.secao');
             secoes.forEach(secao => secao.style.display = 'none');

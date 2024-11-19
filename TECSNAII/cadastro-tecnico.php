@@ -1,8 +1,8 @@
 <?php
 $servername = "localhost";  // seu host
-$username = "root";   // seu usuário do banco de dados
-$password = "";       // sua senha do banco de dados
-$dbname = "tecsnai_db";  // nome do seu banco de dados
+$username = "root";         // seu usuário do banco de dados
+$password = "";             // sua senha do banco de dados
+$dbname = "tecsnai_db";     // nome do seu banco de dados
 
 // Cria a conexão usando MySQLi
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -28,13 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $valor_servico = $_POST['valor_servico'];
-    $apresentacao = $_POST['apresentacao'];
-
-    // Upload da foto de perfil
-    $foto = $_FILES['foto']['name'];
-    $foto_tmp = $_FILES['foto']['tmp_name'];
-    $foto_path = "uploads/" . basename($foto);
-    move_uploaded_file($foto_tmp, $foto_path);
+    $descricao_tecnico = $_POST['descricao_tecnico'];
 
     // Upload do documento do certificado (se houver)
     $documento_certificado = "";
@@ -46,8 +40,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Insere os dados no banco
-    $sql = "INSERT INTO tecnicos (nome, telefone, email, senha, foto, certificado, documento_certificado, especialidades, valor_servico, descricao_tecnico) 
-            VALUES ('$nome', '$telefone', '$email', '$senha', '$foto_path', '$certificado', '$doc_path', '$especialidades', '$valor_servico', '$descricao_tecnico')";
+    $sql = "INSERT INTO tecnicos (nome, telefone, email, senha, certificado, documento_certificado, especialidades, valor_servico, descricao_tecnico) 
+            VALUES ('$nome', '$telefone', '$email', '$senha', '$certificado', '$doc_path', '$especialidades', '$valor_servico', '$descricao_tecnico')";
 
     if ($conn->query($sql) === TRUE) {
         // Redireciona para a página de login após o cadastro
