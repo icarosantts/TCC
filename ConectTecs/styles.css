@@ -1,0 +1,314 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilo do corpo */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Estilo do cabeçalho */
+header {
+    background-color: #007bff;
+    color: #fff;
+    padding: 20px 0;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo a {
+    color: #fff;
+    font-size: 1.8em;
+    text-decoration: none;
+}
+
+.menu .nav-links {
+    list-style: none;
+    display: flex;
+}
+
+.menu .nav-links li {
+    margin-left: 20px;
+}
+
+.menu .nav-links a {
+    color: #fff;
+    text-decoration: none;
+    padding: 8px 15px;
+    transition: background-color 0.3s ease;
+    border-radius: 4px;
+}
+
+.menu .nav-links a:hover {
+    background-color: #0056b3;
+}
+
+/* Estilo do formulário principal */
+main {
+    padding: 40px 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 800px;
+    margin: 30px auto;
+}
+
+/* Seções de introdução */
+.intro h2, .form-section h3 {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+}
+
+.intro p, .form-section p {
+    font-size: 1.1em;
+    margin-bottom: 20px;
+}
+
+/* Estilo do formulário */
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="file"],
+textarea,
+select {
+    width: 100%;
+    padding: 12px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+/* Estilo dos botões */
+button, .google-button {
+    width: 100%;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 15px;
+    font-size: 1.1em;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 15px;
+}
+
+button:hover, .google-button:hover {
+    background-color: #0056b3;
+}
+
+/* Estilo específico para o botão Google */
+.google-button {
+    background-color: #db4437;
+}
+
+.google-button:hover {
+    background-color: #c1351d;
+}
+
+.menu {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+}
+
+.nav-links li {
+    position: relative;
+    margin: 0 15px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    padding: 10px 15px;
+    display: block;
+}
+
+/* Submenu de configurações oculto por padrão */
+.submenu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color:rgb(7, 96, 212);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.submenu li a {
+    padding: 10px 20px;
+    white-space: nowrap;
+}
+
+/* Exibe o submenu ao passar o mouse sobre Configurações */
+.configuracoes-dropdown:hover .submenu {
+    display: block;
+}
+
+
+#perfil-info {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+    margin-top: 40px;
+}
+
+#perfil-foto {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 4px solid #005b96;
+    object-fit: cover;
+    margin-bottom: 20px;
+}
+
+/* Adicionando borda e sombra à imagem do perfil para melhorar a exibição */
+#perfil-foto {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 4px solid #005b96;
+    object-fit: cover;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Melhorando o estilo do título e parágrafo no perfil */
+#perfil-info h2 {
+    color: #005b96;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+#perfil-info p {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+#perfil-info strong {
+    color: #333;
+}
+
+a, a:visited, a:hover {
+    color: #005b96;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+
+        /* Estilo para os técnicos */
+        .tecnico-card {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .tecnico-card h3 {
+            font-size: 20px;
+            color: #333;
+        }
+
+        /* Estilo para o card de alerta de login */
+        #login-card {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .card p {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .card button {
+            margin: 10px;
+            background-color: #0073e6;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .card button:hover {
+            background-color: #005bb5;
+        }
+
+        .card .cancel-btn {
+            background-color: #ff4d4d;
+        }
+
+        .card .cancel-btn:hover {
+            background-color: #e60000;
+        }
+        
+footer {
+    background-color: #007bff;
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+}
+
+
