@@ -104,32 +104,6 @@ select {
     font-size: 1em;
 }
 
-/* Estilo dos botões */
-button, .google-button {
-    width: 100%;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    padding: 15px;
-    font-size: 1.1em;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-top: 15px;
-}
-
-button:hover, .google-button:hover {
-    background-color: #0056b3;
-}
-
-/* Estilo específico para o botão Google */
-.google-button {
-    background-color: #db4437;
-}
-
-.google-button:hover {
-    background-color: #c1351d;
-}
 
 .menu {
     display: flex;
