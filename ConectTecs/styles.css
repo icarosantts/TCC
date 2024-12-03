@@ -29,11 +29,13 @@ header {
     align-items: center;
 }
 
-.logo a {
-    color: #fff;
-    font-size: 1.8em;
-    text-decoration: none;
+.logo{
+    color: #fff; /* Define a cor do texto como branca */
+    font-size: 1.8em; /* Define o tamanho da fonte */
+    text-decoration: none; /* Remove a linha sublinhada */
+    font-weight: bold; /* Opcional: deixa o texto mais destacado */
 }
+
 
 .menu .nav-links {
     list-style: none;
@@ -104,6 +106,23 @@ select {
     font-size: 1em;
 }
 
+/* Estilo dos botões */
+button {
+    width: 100%;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 15px;
+    font-size: 1.1em;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 15px;
+}
+
+button:hover{
+    background-color: #0056b3;
+}
 
 .menu {
     display: flex;
@@ -274,7 +293,8 @@ a:hover {
         .card .cancel-btn:hover {
             background-color: #e60000;
         }
-        
+       
+
 footer {
     background-color: #007bff;
     color: #fff;
