@@ -30,10 +30,11 @@ header {
 }
 
 .logo{
-    color: #fff; /* Define a cor do texto como branca */
-    font-size: 1.8em; /* Define o tamanho da fonte */
+    color: royalblue; /* Define a cor do texto como branca */
+    font-size: 2.5em; /* Define o tamanho da fonte */
     text-decoration: none; /* Remove a linha sublinhada */
     font-weight: bold; /* Opcional: deixa o texto mais destacado */
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 
 
@@ -47,11 +48,12 @@ header {
 }
 
 .menu .nav-links a {
-    color: #fff;
+    color: rgb(17, 34, 85);
     text-decoration: none;
     padding: 8px 15px;
     transition: background-color 0.3s ease;
     border-radius: 4px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 
 .menu .nav-links a:hover {
