@@ -76,23 +76,43 @@ $conn->close();
         </section>
 
         <section id="perfil" class="secao">
-            <h2>Meu perfil</h2>
-            <div id="perfil-info">
-                <!-- Exibe a foto do técnico -->
-                <img src="<?php echo $foto_para_exibir; ?>" alt="Foto do Técnico" />
-                
-                <!-- Botão de upload de nova foto -->
-                <form id="upload-foto-form" enctype="multipart/form-data">
-                    <input type="file" id="upload-foto" name="foto" accept="image/*">
-                    <button type="button" onclick="enviarFoto()">Atualizar Foto</button>
-                </form>
+        <h2>Perfil do Técnico</h2>
 
-                <!-- Exibe o nome e a descrição -->
-                <h2 id="nome-tecnico"><?php echo htmlspecialchars($tecnico['nome']); ?></h2>
-                <p><strong>Área de Ação:</strong> <?php echo htmlspecialchars($tecnico['especialidades']); ?></p>
+            <!-- Exibição do perfil -->
+            <div id="perfil-exibicao">
+                
+                <p><strong>Nome:</strong> <?php echo htmlspecialchars($tecnico['nome']); ?></p>
+                <p><strong>Telefone:</strong> <?php echo htmlspecialchars($tecnico['telefone']); ?></p>
+                <p><strong>Área de Atuação:</strong> <?php echo htmlspecialchars($tecnico['especialidades']); ?></p>
+                <p><strong>Valor de Serviços:</strong> <?php echo htmlspecialchars($tecnico['valor_servico']); ?></p>
                 <p><strong>Descrição:</strong> <?php echo htmlspecialchars($tecnico['descricao_tecnico']); ?></p>
-                <p><strong>Valores de Serviço:</strong> <?php echo htmlspecialchars($tecnico['valor_servico']); ?></p>
+                
+                <button type="button" onclick="mostrarEdicao()">Editar</button>
+                <p id="mensagem-edicao" style="color: green;"></p>
+
             </div>
+
+            <!-- Formulário de edição (oculto inicialmente) -->
+            <form id="form-edicao" action="atualizar_perfil.php" method="POST" style="display: none;">
+                <label for="nome">Nome:</label>
+                <input type="text" id="nome" name="nome" value="<?php echo htmlspecialchars($tecnico['nome']); ?>">
+
+                <label for="telefone">Telefone:</label>
+                <input type="text" id="telefone" name="telefone" value="<?php echo htmlspecialchars($tecnico['telefone']); ?>">
+
+                <label for="especialidades">Área de Atuação:</label>
+                <input type="text" id="especialidades" name="especialidades" value="<?php echo htmlspecialchars($tecnico['especialidades']); ?>">
+
+                <label for="valor_servico">Valor de Serviços:</label>
+                <input type="text" id="valor_servico" name="valor_servico" value="<?php echo htmlspecialchars($tecnico['valor_servico']); ?>">
+
+                <label for="descricao_tecnico">Sua descrição:</label>
+                <textarea id="descricao_tecnico" name="descricao_tecnico"><?php echo htmlspecialchars($tecnico['descricao_tecnico']); ?></textarea>
+
+                <button type="submit">Salvar</button>
+                <button type="button" onclick="cancelarEdicao()">Cancelar</button>
+            </form>
+
         </section>
 
 
@@ -139,6 +159,35 @@ $conn->close();
     </main>
 
     <script>
+
+        document.getElementById('form-edicao').addEventListener('submit', function(event) {
+            event.preventDefault(); // Impede o recarregamento da página
+
+            const formData = new FormData(this);
+
+            fetch('atualizar_perfil.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('mensagem-edicao').textContent = data;
+                cancelarEdicao(); // Volta para a exibição normal após salvar
+            })
+            .catch(error => {
+                console.error('Erro ao salvar:', error);
+            });
+        });
+
+        function mostrarEdicao() {
+            document.getElementById("perfil-exibicao").style.display = "none";
+            document.getElementById("form-edicao").style.display = "block";
+        }
+
+        function cancelarEdicao() {
+            document.getElementById("perfil-exibicao").style.display = "block";
+            document.getElementById("form-edicao").style.display = "none";
+        }
 
         document.getElementById('form-foto').addEventListener('submit', function(event) {
             event.preventDefault();

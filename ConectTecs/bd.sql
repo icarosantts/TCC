@@ -31,12 +31,3 @@ CREATE TABLE tecnicos (
     foto VARCHAR(255), -- Caminho para a foto de perfil -- Pequena apresentação do técnico
     data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
--- Criação da tabela de serviços
-CREATE TABLE servicos (
-    id_servico INT AUTO_INCREMENT PRIMARY KEY,
-    id_tecnico INT NOT NULL,
-    valor DECIMAL(10, 2), -- Valor do serviço
-    descricao TEXT, -- Descrição do serviço
-    FOREIGN KEY (id_tecnico) REFERENCES tecnicos(id_tecnico) ON DELETE CASCADE
-);
