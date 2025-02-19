@@ -127,24 +127,37 @@ $conn->close();
         </section>
 
         <section id="mudar-senha" class="secao" style="display: none;">
-            <h2>Mudar Senha</h2>
-            <!-- Formulário para mudar a senha -->
+        <h3>Mudar Senha</h3>
+        <form action="mudar_senha_tecnico.php" method="post">
+            <label for="senha_atual">Senha Atual:</label>
+            <input type="password" id="senha_atual" name="senha_atual" required><br>
+            <label for="nova_senha">Nova Senha:</label>
+            <input type="password" id="nova_senha" name="nova_senha" required><br>
+            <button type="submit">Atualizar Senha</button>
+        </form>
         </section>
 
         <section id="alterar-email" class="secao" style="display: none;">
-            <h2>Alterar E-mail</h2>
-            <!-- Formulário para alterar o e-mail -->
+        <h3>Alterar E-mail</h3>
+        <form action="mudar_email_tecnico.php" method="post">
+            <label for="novo_email">Novo E-mail:</label>
+            <input type="email" id="novo_email" name="novo_email" required><br>
+            <button type="submit">Atualizar E-mail</button>
+        </form>
         </section>
 
         <section id="calendario" class="secao" style="display: none;">
-            <h2>Calendário</h2>
-            <p>Visualize seus agendamentos em um calendário interativo.</p>
+        <h3>Calendário</h3>
+        <p>Aqui ficará o calendário interativo.</p>
         </section>
 
         <section id="excluir-conta" class="secao" style="display: none;">
-            <h2>Excluir Conta</h2>
-            <p>Cuidado! Esta ação é irreversível.</p>
-            <!-- Botão ou formulário para confirmar exclusão da conta -->
+            <h3>Excluir Conta</h3>
+            <form action="excluir_conta_tecnico.php" method="post">
+                <label for="confirmacao">Digite "EXCLUIR" para confirmar:</label>
+                <input type="text" id="confirmacao" name="confirmacao" required><br>
+                <button type="submit">Excluir Conta</button>
+            </form>
         </section>
 
         <section id="agendamentos-confirmados" class="secao" style="display: none;">
