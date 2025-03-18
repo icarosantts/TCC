@@ -3,12 +3,23 @@ session_start();
 
 // Verifica se o usuário está logado e se é do tipo cliente
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'cliente') {
-    // Se não estiver logado ou não for cliente, redireciona para a página de login
     header("Location: login.html");
     exit();
 }
 
-// Caso esteja logado e seja cliente, o conteúdo da página do cliente é exibido
+// Conecta ao banco de dados
+require_once 'conexao.php'; // Arquivo de conexão com o banco de dados
+
+// Recupera as informações do cliente
+$cliente_id = $_SESSION['usuario_id'];
+$sql = "SELECT nome, telefone, email FROM clientes WHERE id_cliente = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $cliente_id);
+$stmt->execute();
+$stmt->bind_result($nome, $telefone, $email);
+$stmt->fetch();
+$stmt->close();
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -26,14 +37,15 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'cliente') 
             <nav class="menu">
                 <ul class="nav-links">
                     <li><a href="#" onclick="carregarQuiz()">Buscar Técnicos</a></li>
-                    <li><a href="#" onclick="mostrarSecao('mensagens')">Mensagens</a></li>
                     <li><a href="#" onclick="mostrarSecao('meu-perfil')">Meu Perfil</a></li>
+                    <li><a href="#" onclick="mostrarSecao('mensagens')">Mensagens</a></li>
+                    <li><a href="#" onclick="mostrarSecao('ajuda')">Ajuda</a></li>
+                    
                     <li><a href="logout.php">Sair</a></li>
                     <li class="configuracoes-dropdown">
                         <a href="#">Configurações</a>
                         <ul class="submenu">
                             <li><a href="#" onclick="mostrarSecao('mudar-senha')">Mudar Senha</a></li>
-                            <li><a href="#" onclick="mostrarSecao('alterar-email')">Alterar E-mail</a></li>
                             <li><a href="#" onclick="mostrarSecao('excluir-conta')">Excluir Conta</a></li>
                         </ul>
                     </li>
@@ -62,53 +74,147 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'cliente') 
             <p>Agende novos serviços com técnicos disponíveis.</p>
         </section>
 
-        <!-- Mensagens -->
-        <section id="mensagens" class="secao" style="display: none;">
-            <h2>Mensagens</h2>
-            <div id="mensagens-list"></div>
-        </section>
-
+        
         <!-- Meu Perfil -->
         <section id="meu-perfil" class="secao" style="display: none;">
             <h2>Meu Perfil</h2>
-            
-        </section>
 
-        <!-- Histórico de Serviços -->
-        <section id="historico-servicos" class="secao" style="display: none;">
-            <h2>Histórico de Serviços</h2>
-            <div id="historico-servicos-list"></div>
-        </section>
+            <!-- Exibição do perfil -->
+            <div id="perfil-exibicao">
+                <p><strong>Nome:</strong> <?php echo htmlspecialchars($nome); ?></p>
+                <p><strong>Telefone:</strong> <?php echo htmlspecialchars($telefone); ?></p>
+                <p><strong>E-mail:</strong> <?php echo htmlspecialchars($email); ?></p>
+                
+                <button type="button" onclick="mostrarEdicao()">Editar</button>
+                <p id="mensagem-edicao" style="color: green;"></p>
+            </div>
 
-        <!-- Configurações -->
-        <section id="mudar-senha" class="secao" style="display: none;">
-            <h2>Mudar Senha</h2>
-            <form action="mudar_senha.php" method="POST">
-                <label for="nova-senha">Nova Senha:</label>
-                <input type="password" id="nova-senha" name="nova_senha" required>
-                <button type="submit">Alterar Senha</button>
+            <!-- Formulário de edição (oculto inicialmente) -->
+            <form id="form-edicao" action="atualizar_perfil_cliente.php" method="POST" style="display: none;">
+                <div class="form-group">
+                    <label for="nome">Nome:</label>
+                    <input type="text" id="nome" name="nome" value="<?php echo htmlspecialchars($nome); ?>">
+                </div>
+                <div class="form-group">
+                    <label for="telefone">Telefone:</label>
+                    <input type="text" id="telefone" name="telefone" value="<?php echo htmlspecialchars($telefone); ?>">
+                </div>
+                <div class="form-group">
+                    <label for="email">E-mail:</label>
+                    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>">
+                </div>
+                <button type="submit">Salvar</button>
+                <button type="button" onclick="cancelarEdicao()">Cancelar</button>
             </form>
         </section>
 
-        <section id="alterar-email" class="secao" style="display: none;">
-            <h2>Alterar E-mail</h2>
-            <form action="alterar_email.php" method="POST">
-                <label for="novo-email">Novo E-mail:</label>
-                <input type="email" id="novo-email" name="novo_email" required>
-                <button type="submit">Alterar E-mail</button>
-            </form>
-        </section>
+            <!-- Mensagens -->
+            <section id="mensagens" class="secao" style="display: none;">
+                <h2>Mensagens</h2>
+                <div id="mensagens-list"></div>
+            </section>
 
-        <section id="excluir-conta" class="secao" style="display: none;">
-            <h2>Excluir Conta</h2>
-            <p>Cuidado! Esta ação é irreversível.</p>
-            <form action="excluir_conta.php" method="POST">
-                <button type="submit">Confirmar Exclusão</button>
-            </form>
-        </section>
+            <section id="ajuda" class="secao" style="display: none;">
+            <h2>Ajuda</h2>
+            <p>Precisa de ajuda? Entre em contato conosco:</p>
+                <li><strong>E-mail:</strong> suporte@conecttecs.com</li>
+                <li><strong>Telefone:</strong> (00) 1234-5678</li>
+            </section>
+
+            <!-- Histórico de Serviços -->
+            <section id="historico-servicos" class="secao" style="display: none;">
+                <h2>Histórico de Serviços</h2>
+                <div id="historico-servicos-list"></div>
+            </section>
+
+            <section id="mudar-senha" class="secao" style="display: none;">
+                <h3>Mudar Senha</h3>
+                <form action="mudar_senha.php" method="post">
+                    <label for="senha_atual">Senha Atual:</label>
+                    <input type="password" id="senha_atual" name="senha_atual" required><br>
+                    <label for="nova_senha">Nova Senha:</label>
+                    <input type="password" id="nova_senha" name="nova_senha" required><br>
+                    <button type="submit">Atualizar Senha</button>
+                </form>
+            </section>
+
+            <section id="excluir-conta" class="secao" style="display: none;">
+                <h3>Excluir Conta</h3>
+                <p>Cuidado! Esta ação é irreversível.</p>
+                <form action="excluir_conta_cliente.php" method="post">
+                    <label for="confirmacao">Digite "EXCLUIR" para confirmar:</label>
+                    <input type="text" id="confirmacao" name="confirmacao" required><br>
+                    <button type="submit">Excluir Conta</button>
+                </form>
+            </section>
     </main>
 
     <script>
+        
+    function mostrarSecao(secaoId) {
+        // Oculta todas as seções
+        document.querySelectorAll('.secao').forEach(secao => secao.style.display = 'none');
+        
+        // Mostra a seção solicitada
+        document.getElementById(secaoId).style.display = 'block';
+    } 
+       
+    // Função para mostrar o formulário de edição
+    function mostrarEdicao() {
+        document.getElementById("perfil-exibicao").style.display = "none";
+        document.getElementById("form-edicao").style.display = "block";
+    }
+
+    // Função para cancelar a edição
+    function cancelarEdicao() {
+        document.getElementById("perfil-exibicao").style.display = "block";
+        document.getElementById("form-edicao").style.display = "none";
+    }
+
+    // Função para enviar o formulário de edição via AJAX
+    document.getElementById('form-edicao').addEventListener('submit', function(event) {
+        event.preventDefault(); // Impede o recarregamento da página
+
+        const formData = new FormData(this);
+
+        fetch('atualizar_perfil_cliente.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('mensagem-edicao').textContent = data;
+            cancelarEdicao(); // Volta para a exibição normal após salvar
+        })
+        .catch(error => {
+            console.error('Erro ao salvar:', error);
+        });
+    });
+
+    // Função para mostrar a seção solicitada
+    function mostrarSecao(secaoId) {
+        // Oculta todas as seções
+        document.querySelectorAll('.secao').forEach(secao => secao.style.display = 'none');
+        
+        // Mostra a seção solicitada
+        document.getElementById(secaoId).style.display = 'block';
+    }
+
+    // Mostra a seção "Meu Perfil" ao carregar a página (opcional)
+    document.addEventListener('DOMContentLoaded', () => mostrarSecao('resumo'));
+
+    // Função para mostrar a seção "Meu Perfil"
+    function mostrarSecao(secaoId) {
+        // Oculta todas as seções
+        document.querySelectorAll('.secao').forEach(secao => secao.style.display = 'none');
+        
+        // Mostra a seção solicitada
+        document.getElementById(secaoId).style.display = 'block';
+    }
+
+    // Mostra a seção "Meu Perfil" ao carregar a página (opcional)
+    document.addEventListener('DOMContentLoaded', () => mostrarSecao('resumo'));
+
         function carregarQuiz() {
             const quizHTML = `
                 <h2>Estou Procurando um Técnico</h2>

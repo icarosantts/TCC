@@ -41,25 +41,28 @@ $result = $stmt->get_result();
 </head>
 <body>
 <header>
-    <div class="container">
-        <h1 class="logo"><a href="index.html">ConectTecs</a></h1>
-        <nav class="menu">
-            <ul class="nav-links">
-                <li><a href="#" onclick="mostrarSecao('mensagens')">Mensagens</a></li>
-                <li><a href="#" onclick="mostrarSecao('meu-perfil')">Meu Perfil</a></li>
-                <li><a href="logout.php">Sair</a></li>
-                <li class="configuracoes-dropdown">
-                    <a href="#">Configurações</a>
-                    <ul class="submenu">
-                        <li><a href="#" onclick="mostrarSecao('mudar-senha')">Mudar Senha</a></li>
-                        <li><a href="#" onclick="mostrarSecao('alterar-email')">Alterar E-mail</a></li>
-                        <li><a href="#" onclick="mostrarSecao('excluir-conta')">Excluir Conta</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </nav>
-    </div>
-</header>
+        <div class="container">
+            <h1 class="logo"><a href="index.html">ConectTecs</a></h1>
+            <nav class="menu">
+                <ul class="nav-links">
+                    <li><a href="#" onclick="carregarQuiz()">Buscar Técnicos</a></li>
+                    <li><a href="#" onclick="mostrarSecao('meu-perfil')">Meu Perfil</a></li>
+                    <li><a href="#" onclick="mostrarSecao('mensagens')">Mensagens</a></li>
+                    <li><a href="#" onclick="mostrarSecao('ajuda')">Ajuda</a></li>
+                    
+                    <li><a href="logout.php">Sair</a></li>
+                    <li class="configuracoes-dropdown">
+                        <a href="#">Configurações</a>
+                        <ul class="submenu">
+                            <li><a href="#" onclick="mostrarSecao('mudar-senha')">Mudar Senha</a></li>
+                            <li><a href="#" onclick="mostrarSecao('alterar-email')">Alterar E-mail</a></li>
+                            <li><a href="#" onclick="mostrarSecao('excluir-conta')">Excluir Conta</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 <main>
     <section class="resultados">
         <h2>Técnicos Encontrados</h2>

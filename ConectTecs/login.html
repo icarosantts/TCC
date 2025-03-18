@@ -46,6 +46,21 @@
         <p>&copy; 2024 ConectTecs. Todos os direitos reservados.</p>
     </footer>
 
-    <script src="script.js"></script>
+    <script>
+
+    document.querySelector('form').addEventListener('submit', function(event) {
+
+        var email= document.getElementById('email').value;
+        var senha= document.getElementById('senha').value;
+    
+        if( email=== '' || senha=== ''){
+            alert('Por favor, preencha todos os campos.');
+            event.preventDefault();
+         } else{
+            form.reset();
+         }
+    });
+    
+    </script>
 </body>
 </html>

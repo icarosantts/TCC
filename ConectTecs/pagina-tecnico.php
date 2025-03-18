@@ -56,7 +56,6 @@ $conn->close();
                         <a href="#">Configurações</a>
                         <ul class="submenu">
                             <li><a href="#" onclick="mostrarSecao('mudar-senha')">Mudar Senha</a></li>
-                            <li><a href="#" onclick="mostrarSecao('alterar-email')">Alterar E-mail</a></li>
                             <li><a href="#" onclick="mostrarSecao('calendario')">Calendário</a></li>
                             <li><a href="#" onclick="mostrarSecao('excluir-conta')">Excluir Conta</a></li>
                         </ul>
@@ -75,44 +74,52 @@ $conn->close();
             </div>
         </section>
 
+        <!-- Meu Perfil -->
         <section id="perfil" class="secao">
-        <h2>Perfil do Técnico</h2>
+            <h2>Perfil do Técnico</h2>
 
             <!-- Exibição do perfil -->
             <div id="perfil-exibicao">
-                
                 <p><strong>Nome:</strong> <?php echo htmlspecialchars($tecnico['nome']); ?></p>
                 <p><strong>Telefone:</strong> <?php echo htmlspecialchars($tecnico['telefone']); ?></p>
+                <p><strong>E-mail:</strong> <?php echo htmlspecialchars($tecnico['email']); ?></p>
                 <p><strong>Área de Atuação:</strong> <?php echo htmlspecialchars($tecnico['especialidades']); ?></p>
                 <p><strong>Valor de Serviços:</strong> <?php echo htmlspecialchars($tecnico['valor_servico']); ?></p>
                 <p><strong>Descrição:</strong> <?php echo htmlspecialchars($tecnico['descricao_tecnico']); ?></p>
                 
                 <button type="button" onclick="mostrarEdicao()">Editar</button>
                 <p id="mensagem-edicao" style="color: green;"></p>
-
             </div>
 
             <!-- Formulário de edição (oculto inicialmente) -->
-            <form id="form-edicao" action="atualizar_perfil.php" method="POST" style="display: none;">
-                <label for="nome">Nome:</label>
-                <input type="text" id="nome" name="nome" value="<?php echo htmlspecialchars($tecnico['nome']); ?>">
-
-                <label for="telefone">Telefone:</label>
-                <input type="text" id="telefone" name="telefone" value="<?php echo htmlspecialchars($tecnico['telefone']); ?>">
-
-                <label for="especialidades">Área de Atuação:</label>
-                <input type="text" id="especialidades" name="especialidades" value="<?php echo htmlspecialchars($tecnico['especialidades']); ?>">
-
-                <label for="valor_servico">Valor de Serviços:</label>
-                <input type="text" id="valor_servico" name="valor_servico" value="<?php echo htmlspecialchars($tecnico['valor_servico']); ?>">
-
-                <label for="descricao_tecnico">Sua descrição:</label>
-                <textarea id="descricao_tecnico" name="descricao_tecnico"><?php echo htmlspecialchars($tecnico['descricao_tecnico']); ?></textarea>
-
+            <form id="form-edicao" action="atualizar_perfil_tecnico.php" method="POST" style="display: none;">
+                <div class="form-group">
+                    <label for="nome">Nome:</label>
+                    <input type="text" id="nome" name="nome" value="<?php echo htmlspecialchars($tecnico['nome']); ?>">
+                </div>
+                <div class="form-group">
+                    <label for="telefone">Telefone:</label>
+                    <input type="text" id="telefone" name="telefone" value="<?php echo htmlspecialchars($tecnico['telefone']); ?>">
+                </div>
+                <div class="form-group">
+                    <label for="email">E-mail:</label>
+                    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($tecnico['email']); ?>">
+                </div>
+                <div class="form-group">
+                    <label for="especialidades">Área de Atuação:</label>
+                    <input type="text" id="especialidades" name="especialidades" value="<?php echo htmlspecialchars($tecnico['especialidades']); ?>">
+                </div>
+                <div class="form-group">
+                    <label for="valor_servico">Valor de Serviços:</label>
+                    <input type="text" id="valor_servico" name="valor_servico" value="<?php echo htmlspecialchars($tecnico['valor_servico']); ?>">
+                </div>
+                <div class="form-group">
+                    <label for="descricao_tecnico">Descrição:</label>
+                    <textarea id="descricao_tecnico" name="descricao_tecnico"><?php echo htmlspecialchars($tecnico['descricao_tecnico']); ?></textarea>
+                </div>
                 <button type="submit">Salvar</button>
                 <button type="button" onclick="cancelarEdicao()">Cancelar</button>
             </form>
-
         </section>
 
 
@@ -123,7 +130,9 @@ $conn->close();
 
         <section id="ajuda" class="secao" style="display: none;">
             <h2>Ajuda</h2>
-            <p>Precisa de ajuda? Consulte nossas informações de suporte ou entre em contato conosco.</p>
+            <p>Precisa de ajuda? Entre em contato conosco:</p>
+                <li><strong>E-mail:</strong> suporte@conecttecs.com</li>
+                <li><strong>Telefone:</strong> (00) 1234-5678</li>
         </section>
 
         <section id="mudar-senha" class="secao" style="display: none;">
@@ -153,6 +162,7 @@ $conn->close();
 
         <section id="excluir-conta" class="secao" style="display: none;">
             <h3>Excluir Conta</h3>
+            <p>Cuidado! Esta ação é irreversível.</p>
             <form action="excluir_conta_tecnico.php" method="post">
                 <label for="confirmacao">Digite "EXCLUIR" para confirmar:</label>
                 <input type="text" id="confirmacao" name="confirmacao" required><br>
@@ -172,13 +182,25 @@ $conn->close();
     </main>
 
     <script>
+        // Função para mostrar o formulário de edição
+        function mostrarEdicao() {
+            document.getElementById("perfil-exibicao").style.display = "none";
+            document.getElementById("form-edicao").style.display = "block";
+        }
 
+        // Função para cancelar a edição
+        function cancelarEdicao() {
+            document.getElementById("perfil-exibicao").style.display = "block";
+            document.getElementById("form-edicao").style.display = "none";
+        }
+
+        // Função para enviar o formulário de edição via AJAX
         document.getElementById('form-edicao').addEventListener('submit', function(event) {
             event.preventDefault(); // Impede o recarregamento da página
 
             const formData = new FormData(this);
 
-            fetch('atualizar_perfil.php', {
+            fetch('atualizar_perfil_tecnico.php', {
                 method: 'POST',
                 body: formData
             })
@@ -192,217 +214,17 @@ $conn->close();
             });
         });
 
-        function mostrarEdicao() {
-            document.getElementById("perfil-exibicao").style.display = "none";
-            document.getElementById("form-edicao").style.display = "block";
-        }
-
-        function cancelarEdicao() {
-            document.getElementById("perfil-exibicao").style.display = "block";
-            document.getElementById("form-edicao").style.display = "none";
-        }
-
-        document.getElementById('form-foto').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const formData = new FormData(this);
-
-            fetch('atualizar-foto-perfil.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Atualiza a imagem de perfil
-                    document.getElementById('perfil-foto').src = data.foto_url;
-                } else {
-                    alert('Erro ao atualizar a foto de perfil: ' + data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Erro ao enviar foto:', error);
-            });
-        });
-
-        // JavaScript para exibir nova foto após upload
-        document.getElementById('upload-foto').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            
-            if (file) {
-                const formData = new FormData();
-                formData.append('foto', file);
-                
-                // Envia a imagem para o servidor
-                fetch('/atualizar-foto-perfil.php', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Atualiza a imagem de perfil na página
-                        document.getElementById('perfil-foto').src = data.foto_url;
-                    } else {
-                        alert('Erro ao atualizar a foto de perfil');
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro ao enviar foto:', error);
-                });
-            }
-        });
-
-        function enviarFoto() {
-            const fotoInput = document.getElementById('upload-foto');
-            const file = fotoInput.files[0];
-
-            if (file) {
-                const formData = new FormData();
-                formData.append('foto', file);
-
-                fetch('/atualizar-foto-perfil.php', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        document.getElementById('foto-perfil').src = data.foto_url;
-                    } else {
-                        alert('Erro ao atualizar a foto de perfil');
-                    }
-                })
-                .catch(error => console.error('Erro ao enviar foto:', error));
-            } else {
-                alert('Por favor, selecione uma foto.');
-            }
-        }
-
+        // Função para mostrar a seção solicitada
         function mostrarSecao(secaoId) {
-            const secoes = document.querySelectorAll('.secao');
-            secoes.forEach(secao => secao.style.display = 'none');
+            // Oculta todas as seções
+            document.querySelectorAll('.secao').forEach(secao => secao.style.display = 'none');
+            
+            // Mostra a seção solicitada
             document.getElementById(secaoId).style.display = 'block';
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            mostrarSecao('perfil');
-            carregarPerfil();
-            carregarMensagens();
-            carregarAgendamentos();
-        });
-
-        function carregarPerfil() {
-            fetch('/buscar-perfil-tecnico.php')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('nome-tecnico').textContent = data.nome;
-                    document.getElementById('area-tecnica').textContent = data.area_tecnica;
-                    document.getElementById('descricao-tecnico').textContent = data.descricao;
-                    document.getElementById('valor-servico').textContent = data.valor_servico || "Não definido";
-                    document.getElementById('foto-perfil').src = data.foto_perfil || 'default-profile.png';
-                })
-                .catch(error => console.error('Erro ao carregar perfil:', error));
-        }
-
-        // Função para exibir o campo de edição
-        function editarCampo(campo) {
-            const campoEdicao = document.getElementById('editar-' + campo);
-            const campoExibicao = document.getElementById(campo);
-
-            // Exibe o campo de edição e esconde o valor atual
-            campoExibicao.style.display = 'none';
-            campoEdicao.style.display = 'inline-block';
-            campoEdicao.value = campoExibicao.textContent.trim(); // Coloca o valor atual no campo de edição
-        }
-
-
-        // Função para salvar as alterações
-        function salvarAlteracoes() {
-            const nome = document.getElementById('editar-nome').value;
-            const descricao = document.getElementById('editar-descricao').value;
-
-            const dados = {
-                nome: nome,
-                descricao: descricao
-            };
-
-            fetch('/atualizar-perfil-tecnico.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(dados),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Atualiza os dados na página
-                    document.getElementById('nome-tecnico').textContent = nome;
-                    document.getElementById('descricao-tecnico').textContent = descricao;
-                    // Esconde o campo de edição
-                    document.getElementById('editar-nome').style.display = 'none';
-                    document.getElementById('editar-descricao').style.display = 'none';
-                } else {
-                    alert('Erro ao salvar alterações');
-                }
-            })
-            .catch(error => console.error('Erro ao salvar alterações:', error));
-        }
-
-
-        function cancelarEdicoes() {
-            document.querySelectorAll('[id^="editar-"]').forEach(input => input.style.display = 'none');
-            carregarPerfil();
-        }
-        document.addEventListener('DOMContentLoaded', () => {
-    mostrarSecao('perfil'); // Exibir a seção do perfil por padrão
-    carregarPerfil(); // Carregar o perfil do técnico
-});
-
-        function carregarPerfil() {
-            fetch('/buscar-perfil-tecnico.php') // Chama o script PHP para buscar os dados do perfil
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        alert('Erro ao carregar perfil: ' + data.error);
-                        return;
-                    }
-                    // Preencher os dados do perfil
-                    document.getElementById('nome-tecnico').textContent = data.nome;
-                    document.getElementById('descricao-tecnico').textContent = data.descricao;
-                    document.getElementById('foto-perfil').src = data.foto || 'default-profile.png';
-                })
-                .catch(error => console.error('Erro ao carregar perfil:', error));
-        }
-
-        document.getElementById('upload-foto').addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    
-    if (file) {
-        const formData = new FormData();
-        formData.append('foto', file);
-        
-        // Enviar a imagem para o servidor
-        fetch('/atualizar-foto-perfil.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Atualiza a imagem de perfil na página
-                document.getElementById('foto-perfil').src = data.foto_url;
-            } else {
-                alert('Erro ao atualizar a foto de perfil');
-            }
-        })
-        .catch(error => {
-            console.error('Erro ao enviar foto:', error);
-        });
-    }
-});
-
-
+        // Mostra a seção "Meu Perfil" ao carregar a página (opcional)
+        document.addEventListener('DOMContentLoaded', () => mostrarSecao('perfil'));
     </script>
 </body>
 </html>
