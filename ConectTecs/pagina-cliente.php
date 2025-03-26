@@ -29,6 +29,102 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel do Usuário - ConectTecs</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Estilos para o modal de agendamento */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .modal-buttons button {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .modal-buttons button[type="submit"] {
+            background-color: #2563eb;
+            color: white;
+        }
+        
+        .modal-buttons button[type="button"] {
+            background-color: #f3f4f6;
+            color: #4b5563;
+        }
+
+        /* Estilos para os botões de ação */
+        .acoes {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .acoes button {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 4px;
+            background-color: #2563eb;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .acoes button:hover {
+            background-color: #1d4ed8;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -65,7 +161,8 @@ $conn->close();
         <!-- Buscar Técnicos -->
         <section id="buscar-tecnicos" class="secao" style="display: none;">
             <h2>Buscar Técnicos</h2>
-            <p>Use a busca para encontrar técnicos qualificados.</p>
+            <div id="quiz-container"></div>
+            <div id="resultados-busca"></div>
         </section>
 
         <!-- Agendar Serviços -->
@@ -108,11 +205,51 @@ $conn->close();
             </form>
         </section>
 
-            <!-- Mensagens -->
-            <section id="mensagens" class="secao" style="display: none;">
-                <h2>Mensagens</h2>
-                <div id="mensagens-list"></div>
-            </section>
+        <!-- Mensagens -->
+        <section id="mensagens" class="secao" style="display: none;">
+            <input type="hidden" id="usuario-id" value="<?php echo $_SESSION['usuario_id']; ?>">
+            <input type="hidden" id="usuario-tipo" value="<?php echo $_SESSION['usuario_tipo']; ?>">
+            
+            <div class="chat-container">
+                <div class="lista-conversas">
+                    <div class="chat-header">
+                        <h3>Conversas</h3>
+                        <button id="atualizar-conversas" title="Atualizar lista">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                    <div id="lista-conversas">
+                        <div class="carregando-conversas">
+                            <i class="fas fa-spinner fa-spin"></i> Carregando conversas...
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="area-chat">
+                    <div class="chat-header" id="chat-header">
+                        <h3 id="nome-interlocutor">Selecione uma conversa</h3>
+                        <div id="status-interlocutor">
+                            <span class="status-bola"></span>
+                            <small>Offline</small>
+                        </div>
+                    </div>
+                    
+                    <div id="mensagens-chat">
+                        <div class="nenhuma-conversa-selecionada">
+                            <i class="fas fa-comments"></i>
+                            <p>Selecione uma conversa para começar</p>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input" id="chat-input" style="display: none;">
+                        <input type="text" id="campo-mensagem" placeholder="Digite sua mensagem..." autocomplete="off">
+                        <button id="enviar-mensagem" disabled>
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
 
             <section id="ajuda" class="secao" style="display: none;">
             <h2>Ajuda</h2>
@@ -151,6 +288,15 @@ $conn->close();
 
     <script>
         
+        // Configuração do Socket.IO
+        const socket = io('https://seuservidor.com'); // Substitua pelo seu servidor
+        
+        // Registrar o cliente quando a página carrega
+        socket.emit('registrar_cliente', {
+            cliente_id: <?php echo $_SESSION['usuario_id']; ?>,
+            cliente_nome: '<?php echo $nome; ?>'
+        });
+
     function mostrarSecao(secaoId) {
         // Oculta todas as seções
         document.querySelectorAll('.secao').forEach(secao => secao.style.display = 'none');
@@ -266,12 +412,16 @@ $conn->close();
                     </div>
 
                     <div class="form-group">
-                        <label>Filtrar valores de serviço (R$):</label>
-                        <input type="number" id="valor-minimo" name="valor-minimo" placeholder="Valor Mínimo" required>
-                        <input type="number" id="valor-maximo" name="valor-maximo" placeholder="Valor Máximo" required>
+                        <label>Faixa de preço (R$):</label>
+                        <div style="display: flex; gap: 1rem;">
+                            <input type="number" id="valor-minimo" name="valor-minimo" placeholder="Mínimo" required>
+                            <input type="number" id="valor-maximo" name="valor-maximo" placeholder="Máximo" required>
+                        </div>
                     </div>
 
-                    <button type="submit">Buscar Técnicos</button>
+                    <div class="acoes">
+                        <button type="submit">Buscar Técnicos</button>
+                    </div>
                 </form>
             `;
             // Substitui o conteúdo da seção "Buscar Técnicos"
@@ -280,11 +430,171 @@ $conn->close();
             mostrarSecao('buscar-tecnicos');
         }
 
+         // Função para iniciar agendamento
+         function iniciarAgendamento(tecnicoId, tecnicoNome) {
+            const modalHTML = `
+                <div class="modal-overlay" id="modal-agendamento">
+                    <div class="modal-content">
+                        <h3>Agendar com ${tecnicoNome}</h3>
+                        <form id="form-agendamento">
+                            <input type="hidden" name="tecnico_id" value="${tecnicoId}">
+                            
+                            <div class="form-group">
+                                <label for="data_agendamento">Data:</label>
+                                <input type="date" id="data_agendamento" name="data_agendamento" required min="${new Date().toISOString().split('T')[0]}">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="hora_agendamento">Horário:</label>
+                                <input type="time" id="hora_agendamento" name="hora_agendamento" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="descricao">Descrição do serviço:</label>
+                                <textarea id="descricao" name="descricao" required></textarea>
+                            </div>
+                            
+                            <div class="modal-buttons">
+                                <button type="submit">Solicitar Agendamento</button>
+                                <button type="button" onclick="fecharModal('modal-agendamento')">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+            // Ouvir confirmações de agendamento
+        socket.on('agendamento_confirmado', (data) => {
+            if(data.cliente_id === <?php echo $_SESSION['usuario_id']; ?>) {
+                alert(`Seu agendamento com ${data.tecnico_nome} foi confirmado para ${data.data} às ${data.hora}`);
+            }
+        });
+            
+            document.getElementById('form-agendamento').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                
+                // Enviar via Socket.IO em tempo real
+                socket.emit('solicitar_agendamento', {
+                    tecnico_id: tecnicoId,
+                    cliente_id: <?php echo $_SESSION['usuario_id']; ?>,
+                    cliente_nome: '<?php echo $nome; ?>',
+                    data: formData.get('data_agendamento'),
+                    hora: formData.get('hora_agendamento'),
+                    descricao: formData.get('descricao')
+                });
+                
+                // Enviar via AJAX para o banco de dados
+                fetch('processar_agendamento.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Agendamento solicitado com sucesso! Aguarde a confirmação do técnico.');
+                    document.getElementById('modal-agendamento').remove();
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Ocorreu um erro ao solicitar o agendamento.');
+                });
+            });
+        }
+        
+        // Função auxiliar para fechar modal
+        function fecharModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if(modal) modal.remove();
+        }
+
+        // Ouvir confirmações de agendamento
+        socket.on('agendamento_confirmado', (data) => {
+            if(data.cliente_id === <?php echo $_SESSION['usuario_id']; ?>) {
+                alert(`Seu agendamento com ${data.tecnico_nome} foi confirmado para ${data.data} às ${data.hora}`);
+            }
+        });
+
         function mostrarSecao(secaoId) {
             document.querySelectorAll('.secao').forEach(secao => secao.style.display = 'none');
             document.getElementById(secaoId).style.display = 'block';
         }
         document.addEventListener('DOMContentLoaded', () => mostrarSecao('resumo'));
+
+                // CHAT
+
+                // Carrega a lista de conversas
+                function carregarConversas() {
+            fetch('carregar_conversas.php')
+                .then(response => response.json())
+                .then(conversas => {
+                    const lista = document.getElementById('lista-conversas');
+                    lista.innerHTML = '';
+                    
+                    conversas.forEach(conv => {
+                        lista.innerHTML += `
+                            <div class="conversa" data-id="${conv.id_conversa}" data-interlocutor="${conv.nome}">
+                                <img src="${conv.foto || 'img/perfil-padrao.jpg'}" width="50">
+                                <div>
+                                    <strong>${conv.nome}</strong>
+                                    <p>${conv.ultima_mensagem || 'Nenhuma mensagem'}</p>
+                                    <small>${new Date(conv.data_ultima_mensagem).toLocaleString()}</small>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    // Adiciona evento de clique para abrir conversa
+                    document.querySelectorAll('.conversa').forEach(el => {
+                        el.addEventListener('click', () => abrirConversa(el.dataset.id, el.dataset.interlocutor));
+                    });
+                });
+        }
+
+        // Carrega notificações (apenas para técnicos)
+        function carregarNotificacoes() {
+            if (document.getElementById('notificacoes-tecnico')) {
+                fetch('carregar_notificacoes.php')
+                    .then(response => response.json())
+                    .then(notificacoes => {
+                        const lista = document.getElementById('lista-notificacoes');
+                        lista.innerHTML = '';
+                        
+                        notificacoes.forEach(not => {
+                            lista.innerHTML += `
+                                <div class="notificacao" data-cliente="${not.cliente_id}">
+                                    <img src="${not.foto || 'img/perfil-padrao.jpg'}" width="40">
+                                    <div>
+                                        <strong>${not.nome}</strong>
+                                        <p>${not.mensagem || 'Novo contato'}</p>
+                                        <button onclick="iniciarConversa(${not.cliente_id}, '${not.nome}')">Responder</button>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    });
+            }
+        }
+
+        // Ao abrir a seção de mensagens
+        document.querySelector('[onclick*="mensagens"]').addEventListener('click', () => {
+            carregarConversas();
+            if (<?php echo $_SESSION['usuario_tipo'] === 'tecnico' ? 'true' : 'false'; ?>) {
+                carregarNotificacoes();
+            }
+        });
+
     </script>
+
+    <!-- Socket.IO -->
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+
+<!-- Seu CSS do chat -->
+<link rel="stylesheet" href="css/chat.css">
+
+<!-- Seu JavaScript do chat -->
+<script src="js/chat.js"></script>
+
 </body>
 </html>

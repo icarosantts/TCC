@@ -124,8 +124,51 @@ $conn->close();
 
 
         <section id="mensagens" class="secao" style="display: none;">
-            <h2>Mensagens</h2>
-            <div id="mensagens-list"></div>
+            <!-- Dados do usuário (passados do PHP para JS) -->
+            <input type="hidden" id="usuario-id" value="<?php echo $_SESSION['usuario_id']; ?>">
+            <input type="hidden" id="usuario-tipo" value="<?php echo $_SESSION['usuario_tipo']; ?>">
+            
+            <div class="chat-container">
+                <!-- Lista de conversas -->
+                <div class="lista-conversas">
+                    <div class="chat-header">
+                        <h3>Conversas</h3>
+                        <button id="atualizar-conversas" title="Atualizar lista">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                    <div id="lista-conversas">
+                        <div class="carregando-conversas">
+                            <i class="fas fa-spinner fa-spin"></i> Carregando conversas...
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Área do chat -->
+                <div class="area-chat">
+                    <div class="chat-header" id="chat-header">
+                        <h3 id="nome-interlocutor">Selecione uma conversa</h3>
+                        <div id="status-interlocutor">
+                            <span class="status-bola"></span>
+                            <small>Offline</small>
+                        </div>
+                    </div>
+                    
+                    <div id="mensagens-chat">
+                        <div class="nenhuma-conversa-selecionada">
+                            <i class="fas fa-comments"></i>
+                            <p>Selecione uma conversa para começar</p>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input" id="chat-input" style="display: none;">
+                        <input type="text" id="campo-mensagem" placeholder="Digite sua mensagem..." autocomplete="off">
+                        <button id="enviar-mensagem" disabled>
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <section id="ajuda" class="secao" style="display: none;">
@@ -225,6 +268,79 @@ $conn->close();
 
         // Mostra a seção "Meu Perfil" ao carregar a página (opcional)
         document.addEventListener('DOMContentLoaded', () => mostrarSecao('perfil'));
+
+        // CHAT
+
+                // Carrega a lista de conversas
+        function carregarConversas() {
+            fetch('carregar_conversas.php')
+                .then(response => response.json())
+                .then(conversas => {
+                    const lista = document.getElementById('lista-conversas');
+                    lista.innerHTML = '';
+                    
+                    conversas.forEach(conv => {
+                        lista.innerHTML += `
+                            <div class="conversa" data-id="${conv.id_conversa}" data-interlocutor="${conv.nome}">
+                                <img src="${conv.foto || 'img/perfil-padrao.jpg'}" width="50">
+                                <div>
+                                    <strong>${conv.nome}</strong>
+                                    <p>${conv.ultima_mensagem || 'Nenhuma mensagem'}</p>
+                                    <small>${new Date(conv.data_ultima_mensagem).toLocaleString()}</small>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    // Adiciona evento de clique para abrir conversa
+                    document.querySelectorAll('.conversa').forEach(el => {
+                        el.addEventListener('click', () => abrirConversa(el.dataset.id, el.dataset.interlocutor));
+                    });
+                });
+        }
+
+        // Carrega notificações (apenas para técnicos)
+        function carregarNotificacoes() {
+            if (document.getElementById('notificacoes-tecnico')) {
+                fetch('carregar_notificacoes.php')
+                    .then(response => response.json())
+                    .then(notificacoes => {
+                        const lista = document.getElementById('lista-notificacoes');
+                        lista.innerHTML = '';
+                        
+                        notificacoes.forEach(not => {
+                            lista.innerHTML += `
+                                <div class="notificacao" data-cliente="${not.cliente_id}">
+                                    <img src="${not.foto || 'img/perfil-padrao.jpg'}" width="40">
+                                    <div>
+                                        <strong>${not.nome}</strong>
+                                        <p>${not.mensagem || 'Novo contato'}</p>
+                                        <button onclick="iniciarConversa(${not.cliente_id}, '${not.nome}')">Responder</button>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    });
+            }
+        }
+
+        // Ao abrir a seção de mensagens
+        document.querySelector('[onclick*="mensagens"]').addEventListener('click', () => {
+            carregarConversas();
+            if (<?php echo $_SESSION['usuario_tipo'] === 'tecnico' ? 'true' : 'false'; ?>) {
+                carregarNotificacoes();
+            }
+        });
+
     </script>
+    <!-- Socket.IO -->
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+
+<!-- Seu CSS do chat -->
+<link rel="stylesheet" href="css/chat.css">
+
+<!-- Seu JavaScript do chat -->
+<script src="js/chat.js"></script>
+
 </body>
 </html>
