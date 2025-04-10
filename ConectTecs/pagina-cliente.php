@@ -149,12 +149,6 @@ $conn->close();
     </header>
 
     <main>
-        <!-- Painel Resumo -->
-        <section id="resumo" class="secao">
-            <h2>Painel do Usuário</h2>
-            <p>Resumo das interações, incluindo solicitações de agendamento, mensagens e avaliações.</p>
-            <button onclick="mostrarSecao('historico-servicos')">Histórico de Serviços</button>
-        </section>
 
         <!-- Buscar Técnicos -->
         <section id="buscar-tecnicos" class="secao" style="display: none;">
@@ -207,12 +201,6 @@ $conn->close();
             <p>Precisa de ajuda? Entre em contato conosco:</p>
                 <li><strong>E-mail:</strong> suporte@conecttecs.com</li>
                 <li><strong>Telefone:</strong> (00) 1234-5678</li>
-        </section>
-
-        <!-- Histórico de Serviços -->
-        <section id="historico-servicos" class="secao" style="display: none;">
-            <h2>Histórico de Serviços</h2>
-            <div id="historico-servicos-list"></div>
         </section>
 
         <section id="mudar-senha" class="secao" style="display: none;">
@@ -278,8 +266,7 @@ $conn->close();
         });
     });
 
-    // Mostra a seção "Meu Perfil" ao carregar a página (opcional)
-    document.addEventListener('DOMContentLoaded', () => mostrarSecao('resumo'));
+    document.addEventListener('DOMContentLoaded', () => mostrarSecao('meu-perfil'));
 
     function carregarQuiz() {
         const quizHTML = `
@@ -412,7 +399,6 @@ $conn->close();
         if(modal) modal.remove();
     }
 
-    document.addEventListener('DOMContentLoaded', () => mostrarSecao('resumo'));
     </script>
 </body>
 </html>
