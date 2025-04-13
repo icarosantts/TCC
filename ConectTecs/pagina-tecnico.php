@@ -78,6 +78,76 @@ $conn->close();
         .secao.ativa {
             display: block;
         }
+
+        .calendar-container {
+    max-width: 800px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.calendar-day-header {
+    text-align: center;
+    font-weight: bold;
+    padding: 10px;
+    background-color: #f0f0f0;
+}
+
+.calendar-day {
+    min-height: 80px;
+    border: 1px solid #ddd;
+    padding: 5px;
+    position: relative;
+}
+
+.calendar-day.empty {
+    background-color: #f9f9f9;
+}
+
+.calendar-day:hover {
+    background-color: #f0f0f0;
+}
+
+.day-number {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.event-indicator {
+    display: block;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 12px;
+    padding: 2px 5px;
+    margin: 2px 0;
+    border-radius: 3px;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.has-events {
+    background-color: #e8f5e9;
+}
+
+.current-day {
+    background-color: #bbdefb;
+    font-weight: bold;
+}
+
     </style>
 </head>
 <body>
@@ -198,8 +268,63 @@ $conn->close();
         </section>
 
         <section id="calendario" class="secao">
-            <h3>Calendário</h3>
-            <p>Aqui ficará o calendário interativo.</p>
+            <h3>Calendário de Serviços</h3>
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <button id="prev-month">&lt; Mês Anterior</button>
+                    <h2 id="current-month">Abril 2023</h2>
+                    <button id="next-month">Próximo Mês &gt;</button>
+                </div>
+                <div class="calendar-grid" id="calendar-grid">
+                    <!-- Os dias serão gerados dinamicamente via JavaScript -->
+                </div>
+            </div>
+            
+            <div id="event-form-container" style="display:none;">
+                <h3>Adicionar/Editar Serviço</h3>
+                <form id="event-form">
+                    <input type="hidden" id="event-id">
+                    <div class="form-group">
+                        <label for="event-date">Data:</label>
+                        <input type="date" id="event-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="event-time">Hora:</label>
+                        <input type="time" id="event-time" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="event-title">Título:</label>
+                        <input type="text" id="event-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="event-description">Descrição:</label>
+                        <textarea id="event-description" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="event-client">Cliente (opcional):</label>
+                        <input type="text" id="event-client">
+                    </div>
+                    <div class="form-group">
+                        <label for="event-address">Endereço:</label>
+                        <input type="text" id="event-address">
+                    </div>
+                    <button type="submit">Salvar</button>
+                    <button type="button" id="cancel-event">Cancelar</button>
+                    <button type="button" id="delete-event" style="display:none;">Excluir</button>
+                </form>
+            </div>
+            
+            <div id="event-details" style="display:none;">
+                <h3>Detalhes do Serviço</h3>
+                <p><strong>Data:</strong> <span id="detail-date"></span></p>
+                <p><strong>Hora:</strong> <span id="detail-time"></span></p>
+                <p><strong>Título:</strong> <span id="detail-title"></span></p>
+                <p><strong>Descrição:</strong> <span id="detail-description"></span></p>
+                <p><strong>Cliente:</strong> <span id="detail-client"></span></p>
+                <p><strong>Endereço:</strong> <span id="detail-address"></span></p>
+                <button type="button" id="edit-event">Editar</button>
+                <button type="button" id="close-details">Fechar</button>
+            </div>
         </section>
 
         <section id="excluir-conta" class="secao">
@@ -315,6 +440,253 @@ $conn->close();
                 return true;
             });
         });
+
+        // Variáveis globais
+let currentDate = new Date();
+let events = [];
+
+// Função para carregar eventos do servidor
+async function loadEvents() {
+    try {
+        const response = await fetch('get_events.php?tecnico_id=<?php echo $tecnico_id; ?>');
+        if (response.ok) {
+            events = await response.json();
+            renderCalendar();
+        } else {
+            console.error('Erro ao carregar eventos');
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+    }
+}
+
+// Função para renderizar o calendário
+function renderCalendar() {
+    const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+    document.getElementById('current-month').textContent = `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+    
+    const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    
+    const daysInMonth = lastDay.getDate();
+    const startingDay = firstDay.getDay();
+    
+    const today = new Date();
+    const isCurrentMonth = currentDate.getMonth() === today.getMonth() && currentDate.getFullYear() === today.getFullYear();
+    
+    let calendarHtml = '';
+    
+    // Cabeçalho dos dias da semana
+    const weekdays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+    weekdays.forEach(day => {
+        calendarHtml += `<div class="calendar-day-header">${day}</div>`;
+    });
+    
+    // Dias vazios no início do mês
+    for (let i = 0; i < startingDay; i++) {
+        calendarHtml += `<div class="calendar-day empty"></div>`;
+    }
+    
+    // Dias do mês
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const dayEvents = events.filter(event => event.date === dateStr);
+        const isCurrentDay = isCurrentMonth && day === today.getDate();
+        
+        let dayClass = 'calendar-day';
+        if (isCurrentDay) dayClass += ' current-day';
+        if (dayEvents.length > 0) dayClass += ' has-events';
+        
+        calendarHtml += `<div class="${dayClass}" data-date="${dateStr}">`;
+        calendarHtml += `<div class="day-number">${day}</div>`;
+        
+        // Mostra até 2 eventos por dia (para não sobrecarregar a visualização)
+        dayEvents.slice(0, 2).forEach(event => {
+            calendarHtml += `<div class="event-indicator" data-id="${event.id}" title="${event.title} - ${event.time}">${event.title}</div>`;
+        });
+        
+        // Mostra um indicador se houver mais eventos
+        if (dayEvents.length > 2) {
+            calendarHtml += `<div class="event-indicator">+${dayEvents.length - 2} mais</div>`;
+        }
+        
+        calendarHtml += `</div>`;
+    }
+    
+    document.getElementById('calendar-grid').innerHTML = calendarHtml;
+    
+    // Adiciona eventos de clique aos dias
+    document.querySelectorAll('.calendar-day:not(.empty)').forEach(day => {
+        day.addEventListener('click', function() {
+            const date = this.getAttribute('data-date');
+            const dayEvents = events.filter(event => event.date === date);
+            
+            if (dayEvents.length > 0) {
+                showDayEvents(date, dayEvents);
+            } else {
+                addNewEvent(date);
+            }
+        });
+    });
+    
+    // Adiciona eventos de clique aos indicadores de eventos
+    document.querySelectorAll('.event-indicator').forEach(indicator => {
+        indicator.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const eventId = this.getAttribute('data-id');
+            const event = events.find(e => e.id == eventId);
+            if (event) showEventDetails(event);
+        });
+    });
+}
+
+// Função para mostrar eventos de um dia específico
+function showDayEvents(date, dayEvents) {
+    // Implementação de uma modal ou lista de eventos para o dia
+    alert(`Eventos em ${date}:\n\n${dayEvents.map(e => `- ${e.time}: ${e.title}`).join('\n')}`);
+}
+
+// Função para adicionar novo evento
+function addNewEvent(date) {
+    document.getElementById('event-form-container').style.display = 'block';
+    document.getElementById('event-details').style.display = 'none';
+    
+    const form = document.getElementById('event-form');
+    form.reset();
+    document.getElementById('event-id').value = '';
+    document.getElementById('event-date').value = date;
+    document.getElementById('delete-event').style.display = 'none';
+}
+
+// Função para mostrar detalhes do evento
+function showEventDetails(event) {
+    document.getElementById('event-details').style.display = 'block';
+    document.getElementById('event-form-container').style.display = 'none';
+    
+    document.getElementById('detail-date').textContent = formatDate(event.date);
+    document.getElementById('detail-time').textContent = event.time;
+    document.getElementById('detail-title').textContent = event.title;
+    document.getElementById('detail-description').textContent = event.description || 'Nenhuma descrição';
+    document.getElementById('detail-client').textContent = event.client || 'Não especificado';
+    document.getElementById('detail-address').textContent = event.address || 'Não especificado';
+    
+    document.getElementById('edit-event').onclick = function() {
+        editEvent(event);
+    };
+}
+
+// Função para editar evento
+function editEvent(event) {
+    document.getElementById('event-form-container').style.display = 'block';
+    document.getElementById('event-details').style.display = 'none';
+    
+    const form = document.getElementById('event-form');
+    form.reset();
+    
+    document.getElementById('event-id').value = event.id;
+    document.getElementById('event-date').value = event.date;
+    document.getElementById('event-time').value = event.time;
+    document.getElementById('event-title').value = event.title;
+    document.getElementById('event-description').value = event.description || '';
+    document.getElementById('event-client').value = event.client || '';
+    document.getElementById('event-address').value = event.address || '';
+    
+    document.getElementById('delete-event').style.display = 'inline-block';
+}
+
+// Função para formatar data
+function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('pt-BR');
+}
+
+// Event Listeners
+document.getElementById('prev-month').addEventListener('click', function() {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    renderCalendar();
+});
+
+document.getElementById('next-month').addEventListener('click', function() {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    renderCalendar();
+});
+
+document.getElementById('cancel-event').addEventListener('click', function() {
+    document.getElementById('event-form-container').style.display = 'none';
+});
+
+document.getElementById('close-details').addEventListener('click', function() {
+    document.getElementById('event-details').style.display = 'none';
+});
+
+document.getElementById('event-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const eventData = {
+        id: document.getElementById('event-id').value,
+        tecnico_id: <?php echo $tecnico_id; ?>,
+        date: document.getElementById('event-date').value,
+        time: document.getElementById('event-time').value,
+        title: document.getElementById('event-title').value,
+        description: document.getElementById('event-description').value,
+        client: document.getElementById('event-client').value,
+        address: document.getElementById('event-address').value
+    };
+    
+    try {
+        const response = await fetch('save_event.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(eventData)
+        });
+        
+        if (response.ok) {
+            alert('Evento salvo com sucesso!');
+            document.getElementById('event-form-container').style.display = 'none';
+            loadEvents(); // Recarrega os eventos
+        } else {
+            alert('Erro ao salvar evento');
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao salvar evento');
+    }
+});
+
+document.getElementById('delete-event').addEventListener('click', async function() {
+    if (confirm('Tem certeza que deseja excluir este evento?')) {
+        const eventId = document.getElementById('event-id').value;
+        
+        try {
+            const response = await fetch('delete_event.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: eventId })
+            });
+            
+            if (response.ok) {
+                alert('Evento excluído com sucesso!');
+                document.getElementById('event-form-container').style.display = 'none';
+                loadEvents(); // Recarrega os eventos
+            } else {
+                alert('Erro ao excluir evento');
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Erro ao excluir evento');
+        }
+    }
+});
+
+// Inicializa o calendário quando a página carrega
+document.addEventListener('DOMContentLoaded', function() {
+    loadEvents();
+});
+
     </script>
 </body>
 </html>

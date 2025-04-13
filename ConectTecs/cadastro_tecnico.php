@@ -173,13 +173,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
 
                 <div class="form-group">
-                    <label>Possui Certificado Técnico?</label>
+                    <label>Possui Diploma Técnico?</label>
                     <label><input type="radio" name="certificado" value="sim" required <?= (isset($_POST['certificado']) && $_POST['certificado'] == 'sim') ? 'checked' : '' ?>> Sim</label>
                     <label><input type="radio" name="certificado" value="nao" required <?= (isset($_POST['certificado']) && $_POST['certificado'] == 'nao') ? 'checked' : '' ?>> Não</label>
                 </div>
 
                 <div class="form-group certificado-documento" style="display: none;">
-                    <label for="documento-certificado">Documento do Certificado (PDF, DOC, JPEG, PNG - Máx: 2MB):</label>
+                    <label for="documento-certificado">Documento do Diploma (PDF, DOC, JPEG, PNG - Máx: 2MB):</label>
                     <input type="file" id="documento-certificado" name="documento-certificado" accept=".pdf, .doc, .docx, .jpg, .jpeg, .png">
                 </div>
 

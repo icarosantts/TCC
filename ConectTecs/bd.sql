@@ -35,3 +35,16 @@ CREATE TABLE tecnicos (
     data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     ultimo_acesso TIMESTAMP NULL
 );
+
+CREATE TABLE eventos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tecnico_id INT NOT NULL,
+    date DATE NOT NULL,
+    time TIME NOT NULL,
+    title VARCHAR(100) NOT NULL,
+    description TEXT,
+    client VARCHAR(100),
+    address TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (tecnico_id) REFERENCES tecnicos(id_tecnico) ON DELETE CASCADE
+);
