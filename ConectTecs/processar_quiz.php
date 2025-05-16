@@ -1,4 +1,10 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+?>
+
+<?php
 session_start();
 
 // Verifica se o usuário está logado e se é do tipo cliente
@@ -116,7 +122,7 @@ $result = $stmt->get_result();
 </head>
 <body>
     <div class="header">
-        <a href="index.html" class="logo">ConectTecs</a>
+        <a href="index.php" class="logo">ConectTecs</a>
         <a href="logout.php" class="logout-btn">Sair</a>
     </div>
 

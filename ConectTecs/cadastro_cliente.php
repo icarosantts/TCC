@@ -1,4 +1,10 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+?>
+
+<?php
 session_start();
 include 'conexao.php';
 
@@ -34,10 +40,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <header>
         <div class="container">
-            <h1 class="logo"><a href="index.html">ConectTecs</a></h1>
+            <h1 class="logo"><a href="index.php">ConectTecs</a></h1>
             <nav class="menu">
                 <ul class="nav-links">
-                    <li><a href="index.html">Página Inicial</a></li>
+                    <li><a href="index.php">Página Inicial</a></li>
                     <li><a href="cadastro_tecnico.php">Sou Técnico</a></li>
                     <li><a href="login.php">Login</a></li>
                 </ul>

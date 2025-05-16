@@ -1,4 +1,10 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+?>
+
+<?php
 session_start();
 
 // Verifica se o usuário está logado e se é do tipo técnico
@@ -153,7 +159,7 @@ $conn->close();
 <body>
     <header>
         <div class="container">
-            <h1 class="logo"><a href="index.html">ConectTecs</a></h1>
+            <h1 class="logo"><a href="index.php">ConectTecs</a></h1>
             <nav class="menu">
                 <ul class="nav-links">
                     <li><a href="#" onclick="mostrarSecao('perfil')" class="ativa">Meu Perfil</a></li>

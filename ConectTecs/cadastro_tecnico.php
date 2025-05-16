@@ -1,4 +1,10 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+?>
+
+<?php
 session_start();
 include 'conexao.php';
 
@@ -108,10 +114,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <header>
         <div class="container">
-            <h1 class="logo"><a href="index.html">ConectTecs</a></h1>
+            <h1 class="logo"><a href="index.php">ConectTecs</a></h1>
             <nav class="menu">
                 <ul class="nav-links">
-                    <li><a href="index.html">Página Inicial</a></li>
+                    <li><a href="index.php">Página Inicial</a></li>
                     <li><a href="cadastro_cliente.php">Estou Procurando Técnico</a></li>
                     <li><a href="login.php">Login</a></li>
                 </ul>
@@ -175,11 +181,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="form-group">
                     <label for="especialidades">Especialidades:</label>
                     <select id="especialidades" name="especialidades[]" multiple required>
-                        <option value="Alimentos">Alimentos</option>
-                        <option value="Automação Industrial">Automação Industrial</option>
-                        <option value="Mecatrônica">Mecatrônica</option>
-                        <option value="Manutenção Automotiva">Manutenção Automotiva</option>
-                        <!-- Adicione mais opções aqui -->
+                        <option value="Alimentos">Técnico em Alimentos</option>
+                        <option value="automacao-industrial">Técnico em Automação Industrial</option>
+                        <option value="mecatronica">Técnico em Mecatrônica</option>
+                        <option value="manutencao-automotiva">Técnico em Manutenção Automotiva</option>
+                        <option value="edificacoes">Técnico em Edificações</option>
+                        <option value="design-calcados">Técnico em Design de Calçados</option>
+                        <option value="eletroeletronica">Técnico em Eletroeletrônica</option>
+                        <option value="eletronica">Técnico em Eletrônica</option>
+                        <option value="eletrotecnica">Técnico em Eletrotécnica</option>
+                        <option value="energia-renovavel">Técnico em Sistemas de Energia Renovável</option>
+                        <option value="qualidade">Técnico em Qualidade</option>
+                        <option value="multimidia">Técnico em Multimídia</option>
+                        <option value="comunicacao-visual">Técnico em Comunicação Visual</option>
+                        <option value="impressao-offset">Técnico em Impressão Offset</option>
+                        <option value="impressao-rotografica-flexografica">Técnico em Impressão Rotográfica e Flexográfica</option>
+                        <option value="processos-graficos">Técnico em Processos Gráficos</option>
+                        <option value="portos">Técnico em Portos</option>
+                        <option value="logistica">Técnico em Logística</option>
+                        <option value="eletromecanica">Técnico em Eletromecânica</option>
+                        <option value="fabricacao-mecanica">Técnico em Fabricação Mecânica</option>
+                        <option value="manutencao-maquinas-industriais">Técnico em Manutenção de Máquinas Industriais</option>
+                        <option value="mecanica">Técnico em Mecânica</option>
+                        <option value="mecanica-precisao">Técnico em Mecânica de Precisão</option>
+                        <option value="metalurgia">Técnico em Metalurgia</option>
+                        <option value="soldagem">Técnico em Soldagem</option>
+                        <option value="soldagem-papel">Técnico em Soldagem e Papel</option>
+                        <option value="ceramica">Técnico em Cerâmica</option>
+                        <option value="petroquimica">Técnico em Petroquímica</option>
+                        <option value="plasticos">Técnico em Plásticos</option>
+                        <option value="analises-quimicas">Técnico em Análises Químicas</option>
+                        <option value="quimica">Técnico em Química</option>
+                        <option value="refrigeracao-climatizacao">Técnico em Refrigeração e Climatização</option>
+                        <option value="equipamentos-biomedicos">Técnico em Equipamentos Biomédicos</option>
+                        <option value="seguranca-trabalho">Técnico em Segurança do Trabalho</option>
+                        <option value="desenvolvimento-sistemas">Técnico em Desenvolvimento de Sistemas</option>
+                        <option value="informatica">Técnico em Informática</option>
+                        <option value="rede-computadores">Técnico em Rede de Computadores</option>
+                        <option value="vestuario">Técnico em Vestuário</option>
+                        <option value="textil">Técnico em Têxtil</option>
                     </select>
                 </div>
 
