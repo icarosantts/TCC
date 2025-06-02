@@ -48,3 +48,13 @@ CREATE TABLE eventos (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (tecnico_id) REFERENCES tecnicos(id_tecnico) ON DELETE CASCADE
 );
+
+CREATE TABLE feedback (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tecnico_id INT NOT NULL,
+    cliente_id INT NOT NULL,
+    comentario TEXT,
+    avaliacao INT CHECK (avaliacao BETWEEN 1 AND 5),
+    data_envio DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+

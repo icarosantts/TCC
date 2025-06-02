@@ -350,6 +350,25 @@
                     <p>Especialista na produção, análise e controle de qualidade de tecidos e materiais têxteis, promovendo eficiência e inovação no setor.</p>
                     <a href="escolha_cadastro.php">Cadastre-se</a>
             </div>
+
+            <section style="max-width: 600px; margin: 40px auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+                <h2>Feedback da Versão Beta</h2>
+                <p style="font-size: 14px; color: #555;">Tem alguma sugestão, encontrou um erro ou quer enviar uma mensagem para a equipe do ConectTecs? Preencha o formulário abaixo:</p>
+                <form action="receber_feedback.php" method="POST">
+                    <input type="hidden" name="tecnico_id" value="1">
+                    <input type="hidden" name="cliente_id" value="2">
+                    
+                    <label>Comentário:</label>
+                    <textarea name="comentario" required></textarea>
+                    
+                    <label>Avaliação (1 a 5):</label>
+                    <input type="number" name="avaliacao" min="1" max="5" required>
+
+                    <button type="submit">Enviar Feedback</button>
+                </form>
+
+            </section>
+
     </main>
     
       <script>
