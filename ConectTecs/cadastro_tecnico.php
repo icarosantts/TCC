@@ -15,7 +15,7 @@ ini_set('display_errors', 1);
 // Verifica se o formulário foi enviado
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nome = trim($_POST['nome']);
-    $telefone = trim($_POST['telefone']);
+    $whatsapp_link = trim($_POST['whatsapp_link']);
     $email = trim($_POST['email']);
     $senha = password_hash(trim($_POST['senha']), PASSWORD_DEFAULT);
     $certificado = isset($_POST['certificado']) ? $_POST['certificado'] : "nao";
@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $especialidades = isset($_POST['especialidades']) && is_array($_POST['especialidades']) ? implode(",", $_POST['especialidades']) : "";
     $valor_servico = trim($_POST['valor_servico']);
     $descricao_tecnico = trim($_POST['descricao_tecnico']);
-
+    
     // Diretório de upload
     $upload_dir = "uploads/";
     if (!is_dir($upload_dir)) {
@@ -52,11 +52,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Insere os dados no banco
-    $sql = "INSERT INTO tecnicos (nome, telefone, email, senha, certificado, documento_certificado, cursando, documento_matricula, especialidades, valor_servico, descricao_tecnico) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO tecnicos (nome, whatsapp_link, email, senha, certificado, documento_certificado, cursando, documento_matricula, especialidades, valor_servico, descricao_tecnico) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     if ($stmt = $conn->prepare($sql)) {
-        $stmt->bind_param("sssssssssss", $nome, $telefone, $email, $senha, $certificado, $documento_certificado, $cursando, $documento_matricula, $especialidades, $valor_servico, $descricao_tecnico);
+        $stmt->bind_param("sssssssssss", $nome, $whatsapp_link, $email, $senha, $certificado, $documento_certificado, $cursando, $documento_matricula, $especialidades, $valor_servico, $descricao_tecnico);
 
         if ($stmt->execute()) {
             header("Location: login.php");
