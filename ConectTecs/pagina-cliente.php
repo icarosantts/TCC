@@ -180,7 +180,6 @@ $conn->close();
                 <p><strong>E-mail:</strong> <?php echo htmlspecialchars($email); ?></p>
                 
                 <button type="button" onclick="mostrarEdicao()">Editar</button>
-                <p id="mensagem-edicao" style="color: green;"></p>
             </div>
 
             <!-- Formulário de edição (oculto inicialmente) -->
