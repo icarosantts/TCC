@@ -195,7 +195,6 @@ $conn->close();
                 <p><strong>Descrição:</strong> <?php echo htmlspecialchars($tecnico['descricao_tecnico']); ?></p>
                 
                 <button type="button" onclick="mostrarEdicao()">Editar Perfil</button>
-                <p id="mensagem-edicao" style="color: green;"></p>
             </div>
 
             <form id="form-edicao" action="atualizar_perfil_tecnico.php" method="POST" style="display: none;">
